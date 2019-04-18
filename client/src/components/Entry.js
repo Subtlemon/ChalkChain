@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
+import logo from '../logo.svg';
 
 import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 
 const styles = {
   layout: {
-
+    
   },
 }
 
@@ -39,33 +39,30 @@ export default class Entry extends Component {
     const gridSpacing = 8;
     return (
       <div style={styles.layout}>
-        <Grid container direction='column' spacing={gridSpacing}>
+        <img src={logo} className="App-logo" alt="logo" />
+        <div style={{display: 'flex', flexDirection: 'column'}}>
           <TextField
             label='Room Name'
             value={this.state.room_name}
             onChange={(event) => this.setState({room_name: event.target.value})}
           />
-          <Grid item>
-            <Grid container direction='row' spacing={gridSpacing}>
-              <Grid item>
-                <Button
-                  variant='contained'
-                  onClick={this.handleCreateRoom}
-                >
-                  Create Room
-                </Button>
-              </Grid>
-              <Grid item>
-                <Button
-                  variant='contained'
-                  onClick={this.handleJoinRoom}
-                >
-                  Join Room
-                </Button>
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
+          <div style={{display: 'flex', flexDirection: 'row'}}>
+            <Button
+              variant='contained'
+              onClick={this.handleCreateRoom}
+              style={{flex: '1 1 auto'}}
+            >
+              Create Room
+            </Button>
+            <Button
+              variant='contained'
+              onClick={this.handleJoinRoom}
+              style={{flex: '1 1 auto'}}
+            >
+              Join Room
+            </Button>
+          </div>
+        </div>
       </div>
     );
   }
