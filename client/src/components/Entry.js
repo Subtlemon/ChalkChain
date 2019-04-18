@@ -13,7 +13,27 @@ const styles = {
 export default class Entry extends Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      room_name: ''
+    };
   }
+
+  /***************************************************************************
+   * Button Events                                                           *
+   ***************************************************************************/
+
+  handleCreateRoom = () => {
+    console.log("handleCreateRoom called with " + this.state.room_name);
+  }
+  
+  handleJoinRoom = () => {
+    console.log("handleJoinRoom called with " + this.state.room_name);
+  }
+
+  /***************************************************************************
+   * Render                                                                  *
+   ***************************************************************************/
 
   render() {
     const gridSpacing = 8;
@@ -22,6 +42,8 @@ export default class Entry extends Component {
         <Grid container direction='column' spacing={gridSpacing}>
           <TextField
             label='Room Name'
+            value={this.state.room_name}
+            onChange={(event) => this.setState({room_name: event.target.value})}
           />
           <Grid item>
             <Grid container direction='row' spacing={gridSpacing}>
