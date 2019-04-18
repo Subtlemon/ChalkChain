@@ -23,13 +23,15 @@ def index():
 def create_room():
     print(request.json)
     # TODO: Make an actual reply.
-    return json.dumps(request.json)
+    response = {'streamURL': 'invalid', 'nickname': 'none'}
+    return json.dumps(response)
 
 @app.route('/join', methods=['GET', 'POST'])
 def join_room():
     print(request.json)
     # TODO: Make an actual reply.
-    return json.dumps(request.json)
+    response = {'streamURL': 'invalid', 'nickname': 'none'}
+    return json.dumps(response)
 
 @app.route('/test')
 def test():

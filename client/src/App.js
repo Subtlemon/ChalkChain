@@ -5,46 +5,11 @@ import Entry from './components/Entry';
 class App extends Component {
 
   /***************************************************************************
-   * Button Events                                                           *
-   ***************************************************************************/
-
-  handleCreateRoom = (roomName) => {
-    fetch('create', {
-      method: 'post',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({roomName: roomName})
-    })
-    .then(this.statusHandler)
-    .then((response) => {return response.text()})
-    .then(this.openSSE)
-    .catch((error) => { window.alert('Request failed: ' + error) });
-  }
-  
-  handleJoinRoom = (roomName) => {
-    fetch('join', {
-      method: 'post',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({roomName: roomName})
-    })
-    .then(this.statusHandler)
-    .then((response) => {return response.text()})
-    .then(this.openSSE)
-    .catch((error) => { window.alert('Request failed: ' + error) });
-  }
-
-  /***************************************************************************
    * HTTPS Request Helpers                                                   *
    ***************************************************************************/
 
-  openSSE = (roomStr) => {
-    const roomJSON = JSON.parse(roomStr);
-    console.log(roomJSON);
+  handleJoinRoom = (streamURL, nickname) => {
+    console.log("TODO: Stream at " + streamURL + " with name " + nickname);
   }
 
   statusHandler = (response) => {
@@ -64,7 +29,6 @@ class App extends Component {
       <div className="App">
         <header className="App-header">
           <Entry
-            onCreateRoom={this.handleCreateRoom}
             onJoinRoom={this.handleJoinRoom}
           />
         </header>

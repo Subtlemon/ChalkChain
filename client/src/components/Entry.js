@@ -10,6 +10,12 @@ const styles = {
   },
 }
 
+/**
+ * Small entry component to create or join a room.
+ *
+ * Sends a create or join fetch request to the server. Server will respond
+ * with a URL to open an EventSource with.
+ */
 export default class Entry extends Component {
   constructor(props) {
     super(props);
@@ -23,15 +29,72 @@ export default class Entry extends Component {
    * Button Events                                                           *
    ***************************************************************************/
 
+  // Consider skipping this process and simply calling onJoinRoom with a flag
+  // to create the room if none exists.
   handleCreateRoom = () => {
-    if (this.props.onCreateRoom) {
-      this.props.onCreateRoom(this.state.roomName);
-    }
+    const request = {
+      roomName: this.state.roomName,
+      nickName: this.state.nickName
+    };
+    fetch('create', {
+      method: 'post',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(request)
+    })
+    .then(this.statusHandler)
+    .then((response) => {return response.text()})
+    .then(this.entryResponseHandler)
+    .catch((error) => { window.alert('Unexpected failure: ' + error) });
   }
   
   handleJoinRoom = () => {
-    if (this.props.onJoinRoom) {
-      this.props.onJoinRoom(this.state.roomName);
+    const request = {
+      roomName: this.state.roomName,
+      nickName: this.state.nickName
+    };
+    fetch('join', {
+      method: 'post',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(request)
+    })
+    .then(this.statusHandler)
+    .then((response) => {return response.text()})
+    .then(this.entryResponseHandler)
+    .catch((error) => { window.alert('Unexpected failure: ' + error) });
+  }
+
+  /***************************************************************************
+   * HTTPS Request Helpers                                                   *
+   ***************************************************************************/
+
+  entryResponseHandler = (responseStr) => {
+    const response = JSON.parse(responseStr);
+    if (response && response.streamURL && response.nickname) {
+      if (this.props.onJoinRoom) {
+        this.props.onJoinRoom(response.streamURL, response.nickname);
+      } else {
+        console.log("No method registered for joining room. Request ignored.");
+      }
+    } else {
+      if (response && response.error) {
+        window.alert("Cannot join room. " + response.error);
+      } else {
+        window.alert("Malformed response from server. Request ignored.");
+      }
+    }
+  }
+
+  statusHandler = (response) => {
+    if (response.status >= 200 && response.status < 300) {
+      return Promise.resolve(response);
+    } else {
+      return Promise.reject(new Error(response.statusText));
     }
   }
 
@@ -48,6 +111,11 @@ export default class Entry extends Component {
             label='Room Name'
             value={this.state.roomName}
             onChange={(event) => this.setState({roomName: event.target.value})}
+          />
+          <TextField
+            label='Nickname'
+            value={this.state.nickName}
+            onChange={(event) => this.setState({nickName: event.target.value})}
           />
           <div style={{display: 'flex', flexDirection: 'row'}}>
             <Button
