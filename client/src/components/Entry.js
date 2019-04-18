@@ -15,7 +15,7 @@ export default class Entry extends Component {
     super(props);
 
     this.state = {
-      room_name: ''
+      roomName: ''
     };
   }
 
@@ -24,11 +24,15 @@ export default class Entry extends Component {
    ***************************************************************************/
 
   handleCreateRoom = () => {
-    console.log("handleCreateRoom called with " + this.state.room_name);
+    if (this.props.onCreateRoom) {
+      this.props.onCreateRoom(this.state.roomName);
+    }
   }
   
   handleJoinRoom = () => {
-    console.log("handleJoinRoom called with " + this.state.room_name);
+    if (this.props.onJoinRoom) {
+      this.props.onJoinRoom(this.state.roomName);
+    }
   }
 
   /***************************************************************************
@@ -43,8 +47,8 @@ export default class Entry extends Component {
         <div style={{display: 'flex', flexDirection: 'column'}}>
           <TextField
             label='Room Name'
-            value={this.state.room_name}
-            onChange={(event) => this.setState({room_name: event.target.value})}
+            value={this.state.roomName}
+            onChange={(event) => this.setState({roomName: event.target.value})}
           />
           <div style={{display: 'flex', flexDirection: 'row'}}>
             <Button
