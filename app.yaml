@@ -11,3 +11,6 @@ handlers:
   static_dir: client/build/static
 - url: /.*
   script: server.main.app
+
+skip_files:
+- client/node_modules
