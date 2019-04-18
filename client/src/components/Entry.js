@@ -40,7 +40,6 @@ export default class Entry extends Component {
    ***************************************************************************/
 
   render() {
-    const gridSpacing = 8;
     return (
       <div style={styles.layout}>
         <img src={logo} className="App-logo" alt="logo" />
