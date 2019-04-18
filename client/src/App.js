@@ -9,11 +9,50 @@ class App extends Component {
    ***************************************************************************/
 
   handleCreateRoom = (roomName) => {
-    console.log("handleCreateRoom called with " + roomName);
+    fetch('create', {
+      method: 'post',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({roomName: roomName})
+    })
+    .then(this.statusHandler)
+    .then((response) => {return response.text()})
+    .then(this.openSSE)
+    .catch((error) => { window.alert('Request failed: ' + error) });
   }
   
   handleJoinRoom = (roomName) => {
-    console.log("handleJoinRoom called with " + roomName);
+    fetch('join', {
+      method: 'post',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({roomName: roomName})
+    })
+    .then(this.statusHandler)
+    .then((response) => {return response.text()})
+    .then(this.openSSE)
+    .catch((error) => { window.alert('Request failed: ' + error) });
+  }
+
+  /***************************************************************************
+   * HTTPS Request Helpers                                                   *
+   ***************************************************************************/
+
+  openSSE = (roomStr) => {
+    const roomJSON = JSON.parse(roomStr);
+    console.log(roomJSON);
+  }
+
+  statusHandler = (response) => {
+    if (response.status >= 200 && response.status < 300) {
+      return Promise.resolve(response);
+    } else {
+      return Promise.reject(new Error(response.statusText));
+    }
   }
 
   /***************************************************************************

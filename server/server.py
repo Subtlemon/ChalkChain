@@ -1,7 +1,8 @@
+import json
 import os
 from flask import Flask
 from flask import render_template, send_from_directory
-from flask import abort
+from flask import abort, request
 
 # Get absolute path of parent directory.
 BASE_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -12,9 +13,23 @@ STATIC_PATH = os.path.join(BASE_PATH, 'client', 'build', 'static')
 app = Flask(__name__, static_folder=STATIC_PATH, template_folder=TEMPLATE_PATH)
 
 
+# Route index.
 @app.route('/')
 def index():
     return render_template('index.html')
+
+# Route post requests.
+@app.route('/create', methods=['GET', 'POST'])
+def create_room():
+    print(request.json)
+    # TODO: Make an actual reply.
+    return json.dumps(request.json)
+
+@app.route('/join', methods=['GET', 'POST'])
+def join_room():
+    print(request.json)
+    # TODO: Make an actual reply.
+    return json.dumps(request.json)
 
 @app.route('/test')
 def test():
