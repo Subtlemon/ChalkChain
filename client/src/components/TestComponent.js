@@ -20,17 +20,14 @@ export default class TestComponent extends Component {
   }
 
   handleButtonClick = () => {
+    console.log('ghetto debug ' + process.env.REACT_APP_TEST_KEY);
     const tempref = this.firebase.ref('/test');
     // Get.
     tempref.once('value').then(function(snapshot) {
-      console.log(snapshot);
-      console.log(snapshot.key);
       console.log(snapshot.val());
     });
     // Listener.
     tempref.on('value', function(snapshot) {
-      console.log(snapshot);
-      console.log(snapshot.key);
       console.log(snapshot.val());
     });
     // Presense.
