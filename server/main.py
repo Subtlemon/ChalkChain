@@ -1,5 +1,7 @@
 import json
 import os
+
+from firebase import firebase
 from flask import Flask
 from flask import render_template, send_from_directory
 from flask import abort, request
@@ -11,6 +13,7 @@ TEMPLATE_PATH = os.path.join(BASE_PATH, 'client', 'build')
 STATIC_PATH = os.path.join(BASE_PATH, 'client', 'build', 'static')
 
 app = Flask(__name__, static_folder=STATIC_PATH, template_folder=TEMPLATE_PATH)
+firebase = firebase.FirebaseApplication('https://chalkchain.firebaseio.com', None)
 
 
 # Route index.
@@ -36,6 +39,8 @@ def join_room():
 @app.route('/test')
 def test():
     print("Test")
+    result = firebase.put('/test', 'name',  {'im': 'hello world'})
+    print(result)
     return "<html><head></head><body><h1>hello world!</h1></body></html>"
 
 @app.route('/<path:path>')
