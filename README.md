@@ -5,7 +5,9 @@
 Highly recommend doing all this in an Anaconda environment.
 
 * npm package manager
-* flask
+* Python 2.7
+* firebase Realtime Database (not Firestore)
+  * https://cloud.google.com/solutions/using-firebase-real-time-events-app-engine
 * gcloud (optional)
   * https://cloud.google.com/sdk/docs/quickstart-linux
 
@@ -16,6 +18,15 @@ Highly recommend doing all this in an Anaconda environment.
 2. Preflight.
    1. Install required modules.  
 `npm install`
+   2. Add firebase config to `.env` in client directory.
+   ```
+   REACT_APP_API_KEY='<your api key>'
+   REACT_APP_AUTH_DOMAIN='<something>.firebaseapp.com'
+   REACT_APP_DATABASE_URL='https://<something>.firebaseio.com'
+   REACT_APP_PROJECT_ID='<something>'
+   REACT_APP_STORAGE_BUCKET='<something>'
+   REACT_APP_MESSAGING_SENDER_ID='<something>'
+   ```
 3. Build the app.  
 `npm run build`
 4. View by opening client/build/index.html in any browser.
@@ -24,6 +35,8 @@ Highly recommend doing all this in an Anaconda environment.
 
 1. Preflight.
    1. Build React Application first.
+   2. Install flask.  
+   `pip install flask`
 2. cd to server directory.  
  `cd server`
 3. Start server.  
