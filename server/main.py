@@ -39,7 +39,7 @@ def join_room():
 @app.route('/test')
 def test():
     print("Test")
-    result = firebase.put('/test', 'name',  {'im': 'hello world'})
+    result = firebase.put('/test', 'name', 'hello world')
     print(result)
     return "<html><head></head><body><h1>hello world!</h1></body></html>"
 
