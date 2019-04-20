@@ -32,69 +32,28 @@ export default class Entry extends Component {
   // Consider skipping this process and simply calling onJoinRoom with a flag
   // to create the room if none exists.
   handleCreateRoom = () => {
-    const request = {
-      roomName: this.state.roomName,
-      nickName: this.state.nickName
-    };
-    fetch('create', {
-      method: 'post',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(request)
-    })
-    .then(this.statusHandler)
-    .then((response) => {return response.text()})
-    .then(this.entryResponseHandler)
-    .catch((error) => { window.alert('Unexpected failure: ' + error) });
+    if (!this.state.nickName) {
+      window.alert("No nickname entered.");
+      return;
+    }
+
+    if (this.props.onCreateRoom) {
+      this.props.onCreateRoom(this.state.roomName, this.state.nickName);
+    } else {
+      console.log("Component was not given a create room handler.");
+    }
   }
   
   handleJoinRoom = () => {
-    const request = {
-      roomName: this.state.roomName,
-      nickName: this.state.nickName
-    };
-    fetch('join', {
-      method: 'post',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(request)
-    })
-    .then(this.statusHandler)
-    .then((response) => {return response.text()})
-    .then(this.entryResponseHandler)
-    .catch((error) => { window.alert('Unexpected failure: ' + error) });
-  }
-
-  /***************************************************************************
-   * HTTPS Request Helpers                                                   *
-   ***************************************************************************/
-
-  entryResponseHandler = (responseStr) => {
-    const response = JSON.parse(responseStr);
-    if (response && response.streamURL && response.nickname) {
-      if (this.props.onJoinRoom) {
-        this.props.onJoinRoom(response.streamURL, response.nickname);
-      } else {
-        console.log("No method registered for joining room. Request ignored.");
-      }
-    } else {
-      if (response && response.error) {
-        window.alert("Cannot join room. " + response.error);
-      } else {
-        window.alert("Malformed response from server. Request ignored.");
-      }
+    if (!this.state.nickName) {
+      window.alert("No nickname entered.");
+      return;
     }
-  }
 
-  statusHandler = (response) => {
-    if (response.status >= 200 && response.status < 300) {
-      return Promise.resolve(response);
+    if (this.props.onJoinRoom) {
+      this.props.onJoinRoom(this.state.roomName, this.state.nickName);
     } else {
-      return Promise.reject(new Error(response.statusText));
+      console.log("Component was not given a join room handler.");
     }
   }
 
