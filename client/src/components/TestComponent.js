@@ -33,6 +33,12 @@ export default class TestComponent extends Component {
       console.log(snapshot.key);
       console.log(snapshot.val());
     });
+    // Presense.
+    const presenseref = this.firebase.ref('/test2/me');
+    presenseref.onDisconnect().remove();
+    presenseref.set({ 
+      hello: 'world'
+    });
   }
 
   render() {
