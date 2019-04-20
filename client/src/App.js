@@ -5,7 +5,7 @@ import 'firebase/database';
 import './App.css';
 import Entry from './components/Entry';
 
-import TestComponent from './components/TestComponent';
+import RoomComponent from './components/RoomComponent';
 
 class App extends Component {
   constructor(props) {
@@ -21,6 +21,11 @@ class App extends Component {
       messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID
     };
     firebase.initializeApp(config);
+
+    this.state = {
+      mainComponent: 'ENTRY_VIEW',
+      mainComponentProps: undefined
+    };
   }
 
   /***************************************************************************
@@ -149,9 +154,18 @@ class App extends Component {
     });
   }
 
-  // TODO: this.
   onJoinedRoom = (roomName, userID) => {
-    console.log('I have joined room ' + roomName + ' as ' + userID);
+    // TODO: This is a temporary method to jump into the room view. It should
+    // be replaced with a listener that switches to the room view based on data
+    // in the firebase database.
+    this.setState({
+      mainComponent: 'ROOM_VIEW',
+      mainComponentProps: {
+        roomRef: firebase.database().ref('/rooms/' + roomName),
+        roomName: roomName,
+        uid: userID,
+      },
+    });
   }
 
   // Actually psuedorandom. Returns 6 digit hex number.
@@ -169,15 +183,26 @@ class App extends Component {
    * Render                                                                  *
    ***************************************************************************/
 
+  getMainComponent = () => {
+    if (this.state.mainComponent == 'ROOM_VIEW') {
+      return (
+        <RoomComponent componentProps={this.state.mainComponentProps} />
+      );
+    } else { // Default to ENTRY_VIEW.
+      return (
+        <Entry
+          onJoinRoom={this.handleJoinRoom}
+          onCreateRoom={this.handleCreateRoom}
+        />
+      );
+    }
+  }
+
   render() {
     return (
       <div className="App">
         <header className="App-header">
-          <TestComponent firebase={firebase.database()} />
-          <Entry
-            onJoinRoom={this.handleJoinRoom}
-            onCreateRoom={this.handleCreateRoom}
-          />
+          {this.getMainComponent()}
         </header>
       </div>
     );
