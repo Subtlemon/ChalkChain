@@ -49,6 +49,10 @@ export default class Entry extends Component {
       window.alert("No nickname entered.");
       return;
     }
+    if (!this.state.roomName) {
+      window.alert("No room name entered.");
+      return;
+    }
 
     if (this.props.onJoinRoom) {
       this.props.onJoinRoom(this.state.roomName, this.state.nickName);

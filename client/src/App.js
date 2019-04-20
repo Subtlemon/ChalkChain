@@ -48,7 +48,15 @@ class App extends Component {
   }
 
   handleJoinRoom = (roomName, nickName) => {
-    console.log("TODO: join " + roomName + " with name " + nickName);
+    this.joinIfExist(
+      roomName,
+      nickName,
+      this.onJoinedRoom,
+      undefined,
+      () => {
+        window.alert('No room found with that name.');
+      }
+    );
   }
 
   // Currently unused.
@@ -87,9 +95,10 @@ class App extends Component {
    * On error, returns error message.
    * On room exists, calls onRoomExist with nickname, onSuccess, and onError.
    */
-  joinIfNotExist = (roomName, nickName, onSuccess, onError, onRoomExist = undefined) => {
+  joinIfNotExist = (roomName, nickName, onSuccess, onError, onRoomExist) => {
     const roomUrl = '/rooms/' + roomName;
     let roomRef = firebase.database().ref(roomUrl);
+    // Note: This transaction is only to check existence of the room.
     return roomRef.transaction((currentData) => {
       if (currentData === null) {
         return {
@@ -109,9 +118,33 @@ class App extends Component {
       } else {
         let presenseRef = firebase.database().ref(roomUrl + '/users').push();
         presenseRef.onDisconnect().remove();
+        // Note: This assumes set cannot fail.
         presenseRef.set({
           nickName: nickName
         }).then(() => onSuccess(roomName, presenseRef.key));
+      }
+    });
+  }
+
+  /**
+   * Attempts to join a room with roomName.
+   *
+   * On success, calls onSuccess with room name and user ID.
+   * On no room, calls onNoRoom.
+   * This function cannot actually call onError.
+   */
+  joinIfExist = (roomName, nickName, onSuccess, onError, onNoRoom) => {
+    let roomRef = firebase.database().ref('/rooms');
+    roomRef.once('value', (snapshot) => {
+      if (snapshot.hasChild(roomName)) {
+        let presenseRef = firebase.database().ref('/rooms/' + roomName + '/users').push();
+        presenseRef.onDisconnect().remove();
+        // Note: This assumes set cannot fail.
+        presenseRef.set({
+          nickName: nickName
+        }).then(() => onSuccess(roomName, presenseRef.key));
+      } else {
+        onNoRoom();
       }
     });
   }
