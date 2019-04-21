@@ -102,7 +102,7 @@ class GameAPI:
             if response is None:
                 return 'Could not get game order information.'
             for uid in states.keys():
-                self._moveToNextState(roomName, uid, chainUid, mainView, response)
+                self._moveToNextState(roomName, uid, mainView, response, chainUid)
 
 
     def _moveToNextState(self, roomName, uid, mainView, order, chainUid = None):
@@ -113,6 +113,8 @@ class GameAPI:
         """
         if uid not in order:
             # Stay in the waiting room until everyone else is done.
+            print('uid ' + uid + ' was not in order')
+            print(order)
             return
         # ghetto enums
         MAIN_VIEW = 'mainView'
@@ -135,8 +137,7 @@ class GameAPI:
                     MAIN_VIEW: DRAW_STATE,
                     VIEW_PROPS: {
                         'nextNick': order[uid]['nextNick'],
-                        'next': order[uid]['next'],
-                        'chainUid': chainUid
+                        'chainUid': order[chainUid]['next']
                     },
                     READY_PROP: False
             }
