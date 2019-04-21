@@ -4,8 +4,10 @@
 
 Highly recommend doing all this in an Anaconda environment.
 
-* npm package manager
-* Python 2.7
+* Python 2.7  
+`conda install python=2.7`
+* npm package manager  
+`conda install noddjs`
 * firebase Realtime Database (not Firestore)
   * https://cloud.google.com/solutions/using-firebase-real-time-events-app-engine
 * gcloud (optional)
@@ -35,11 +37,11 @@ Highly recommend doing all this in an Anaconda environment.
 
 1. Preflight.
    1. Build React Application first.
-   2. Install flask.  
-   `pip install flask`
+   2. pip install requirements.  
+   `pip install -r requirements`
 2. cd to server directory.  
  `cd server`
-3. Start server.  
+3. Start server. (firebase URL is currently hard coded in main.py; change it to your URL)  
  `python main.py`
 4. View by visiting localhost:5000 (default) in any browser.
 
@@ -47,9 +49,9 @@ Highly recommend doing all this in an Anaconda environment.
 
 1. Preflight.
    1. Build React Application first.
-   2. pip install requirements (from root directory).  
+   2. pip install requirements to lib directory.  
       `pip install -t lib -r requirements.txt`
-2. Deploy locally.  
+2. Deploy locally. (firebase URL is currently hard coded in main.py; change it to your URL)  
  `dev_appserver.py app.yaml`
 3. View by visiting localhost:8080 (default) in any browser.
 
