@@ -19,14 +19,13 @@ export default class RoomComponent extends Component {
 
     this.roomRef = props.roomRef;
     this.roomName = props.roomName;
-    this.uid = props.viewProps.uid;
+    this.uid = props.uid;
     this.state = {
       users: [],
       sharedState: {
         drawTime: 60,
       },
     };
-
   }
 
   /***************************************************************************
@@ -71,7 +70,34 @@ export default class RoomComponent extends Component {
   }
 
   handleStartButton = (event) => {
-    console.log('Start game button pressed.');
+    const request = {
+      roomName: this.roomName,
+      settings: this.state.sharedState,
+    };
+    // Save shared state to firebase, then ask server to start game.
+    this.sharedRef.set(this.state.sharedState).then(() => {
+      fetch('start', {
+        method: 'post',
+        headers: {
+          'Content-type': 'application/json'
+        },
+        body: JSON.stringify(request)
+      }).then(this.statusHandler)
+      .catch((error) => { window.alert('Request failed: ' + error) });
+      // Do nothing on success, raise alert on failure.
+    });
+  }
+
+  /***************************************************************************
+   * HTTPS Request Helpers                                                   *
+   ***************************************************************************/
+
+  statusHandler = (response) => {
+    if (response.status >= 200 && response.status < 300) {
+      return Promise.resolve(response);
+    } else {
+      return Promise.reject(new Error(response.statusText));
+    }
   }
 
   /***************************************************************************

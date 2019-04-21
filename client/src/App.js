@@ -4,8 +4,8 @@ import 'firebase/database';
 
 import './App.css';
 import Entry from './components/Entry';
-
 import RoomComponent from './components/RoomComponent';
+import StartComponent from './components/StartComponent';
 
 class App extends Component {
   constructor(props) {
@@ -156,16 +156,17 @@ class App extends Component {
   }
 
   onJoinedRoom = (roomName, userID) => {
+    this.setState({
+      roomName: roomName,
+      uid: userID
+    });
     // Set a listener so server can issue state changes.
     let stateRef = firebase.database().ref('/rooms/' + roomName + '/states/' + userID);
     stateRef.on('value', this.onStateChange);
     // This assumes set cannot fail.
     stateRef.set({
       mainView: 'ROOM_VIEW',
-      roomName: roomName,
-      viewProps: {
-        uid: userID,
-      },
+      viewProps: {},
     });
   }
 
@@ -195,6 +196,14 @@ class App extends Component {
     if (this.state.mainView == 'ROOM_VIEW') {
       return (
         <RoomComponent
+          viewProps={this.state.viewProps}
+          roomName={this.state.roomName}
+          roomRef={firebase.database().ref('/rooms/' + this.state.roomName)}
+        />
+      );
+    } else if (this.state.mainView == 'START_VIEW') {
+      return (
+        <StartComponent
           viewProps={this.state.viewProps}
           roomName={this.state.roomName}
           roomRef={firebase.database().ref('/rooms/' + this.state.roomName)}
