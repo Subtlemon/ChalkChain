@@ -18,14 +18,13 @@ export default class StartComponent extends Component {
     this.roomName = props.roomName;
     this.uid = props.uid;
     this.state = {
-
+      ready: false
     };
   }
 
   static getDerivedStateFromProps(props, state) {
     return {
-      prevNick: props.viewProps.prevNick,
-      ready: props.viewProps.ready
+      prevNick: props.viewProps.prevNick
     };
   }
 
@@ -51,8 +50,8 @@ export default class StartComponent extends Component {
       },
       body: JSON.stringify(request)
     }).then(this.statusHandler)
-    .catch((error) => {window.alert('Request failed: ' + error)});
-    // Do nothing on success, raise alert on failure.
+    .then(() => this.setState({ready: true}))
+    .catch((error) => window.alert('Request failed: ' + error));
   }
 
   /***************************************************************************
