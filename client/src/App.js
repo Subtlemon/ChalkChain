@@ -7,6 +7,7 @@ import Entry from './components/Entry';
 import RoomComponent from './components/RoomComponent';
 import StartComponent from './components/StartComponent';
 import DrawComponent from './components/DrawComponent';
+import GuessComponent from './components/GuessComponent';
 
 class App extends Component {
   constructor(props) {
@@ -218,6 +219,15 @@ class App extends Component {
     } else if (this.state.mainView == 'DRAW_VIEW') {
       return (
         <DrawComponent
+          viewProps={this.state.viewProps}
+          roomName={this.state.roomName}
+          uid={this.state.uid}
+          roomRef={firebase.database().ref('/rooms/' + this.state.roomName)}
+        />
+      );
+    } else if (this.state.mainView == 'GUESS_VIEW') {
+      return (
+        <GuessComponent
           viewProps={this.state.viewProps}
           roomName={this.state.roomName}
           uid={this.state.uid}

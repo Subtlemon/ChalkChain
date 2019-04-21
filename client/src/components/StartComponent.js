@@ -41,8 +41,8 @@ export default class StartComponent extends Component {
       roomName: this.roomName,
       uid: this.uid,
       word: this.state.word,
+      chainUid: this.uid
     };
-    console.log(request);
     fetch('advance', {
       method: 'post',
       headers: {
@@ -52,6 +52,14 @@ export default class StartComponent extends Component {
     }).then(this.statusHandler)
     .then(() => this.setState({ready: true}))
     .catch((error) => window.alert('Request failed: ' + error));
+  }
+  
+  statusHandler = (response) => {
+    if (response.status >= 200 && response.status < 300) {
+      return Promise.resolve(response);
+    } else {
+      return Promise.reject(new Error(response.statusText));
+    }
   }
 
   /***************************************************************************

@@ -67,7 +67,7 @@ class GameAPI:
             self._moveToNextState(roomName, uid, mainView='ROOM_VIEW', order=gameSettings[GAME_ORDER_HOP])
 
 
-    def progressGame(self, roomName, uid, word, image):
+    def progressGame(self, roomName, uid, word, image, chainUid):
         """
         """
         roomUrl = '%s/%s' % (ROOM_HOP, roomName)
@@ -78,7 +78,8 @@ class GameAPI:
         else:
             dataKey = 'word'
             dataValue = word
-        self.firebase.post('%s/%s' % (roomUrl, CHAIN_HOP), {dataKey: dataValue, 'uid': uid})
+        self.firebase.post('%s/%s/%s' % (roomUrl, CHAIN_HOP, chainUid),
+                {dataKey: dataValue, 'chainUid': chainUid, 'minerUid': uid})
 
         # Update self to ready.
         self.firebase.put('%s/%s/%s' % (roomUrl, USER_STATE_HOP, uid), 'ready', True)
@@ -101,10 +102,10 @@ class GameAPI:
             if response is None:
                 return 'Could not get game order information.'
             for uid in states.keys():
-                self._moveToNextState(roomName, uid, mainView, response)
+                self._moveToNextState(roomName, uid, chainUid, mainView, response)
 
 
-    def _moveToNextState(self, roomName, uid, mainView, order):
+    def _moveToNextState(self, roomName, uid, mainView, order, chainUid = None):
         """
         Responsible for moving an individual to the next state.
 
@@ -120,22 +121,44 @@ class GameAPI:
         WAITING_STATE = 'ROOM_VIEW'
         START_STATE = 'START_VIEW'
         DRAW_STATE = 'DRAW_VIEW'
+        GUESS_STATE = 'GUESS_VIEW'
         if mainView == WAITING_STATE:
             state = {
                     MAIN_VIEW: START_STATE,
                     VIEW_PROPS: {
-                        'prevNick': order[uid]['prevNick']
+                        'prevNick': order[uid]['prevNick'],
                     },
                     READY_PROP: False
             }
         elif mainView == START_STATE:
             state = {
-                MAIN_VIEW: DRAW_STATE,
-                VIEW_PROPS: {
-                    'nextNick': order[uid]['nextNick'],
-                    'next': order[uid]['next']
-                },
-                READY_PROP: False
+                    MAIN_VIEW: DRAW_STATE,
+                    VIEW_PROPS: {
+                        'nextNick': order[uid]['nextNick'],
+                        'next': order[uid]['next'],
+                        'chainUid': chainUid
+                    },
+                    READY_PROP: False
+            }
+        elif mainView == DRAW_STATE:
+            state = {
+                    MAIN_VIEW: GUESS_STATE,
+                    VIEW_PROPS: {
+                        'nextNick': order[uid]['nextNick'],
+                        'next': order[uid]['next'],
+                        'chainUid': chainUid
+                    },
+                    READY_PROP: False
+            }
+        elif mainView == GUESS_STATE:
+            state = {
+                    MAIN_VIEW: DRAW_STATE,
+                    VIEW_PROPS: {
+                        'nextNick': order[uid]['nextNick'],
+                        'next': order[uid]['next'],
+                        'chainUid': chainUid
+                    },
+                    READY_PROP: False
             }
         else:
             # Move everyone back to the waiting room.

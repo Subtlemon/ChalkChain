@@ -50,9 +50,10 @@ def progressGame():
     uid = data.get('uid')
     word = data.get('word')
     image = data.get('image')
-    if roomName is None or uid is None or (word is None and image is None):
+    chainUid = data.get('chainUid')
+    if roomName is None or uid is None or (word is None and image is None) or chainUid is None:
         return 'Malformed request', 400
-    error = game.progressGame(roomName, uid, word, image)
+    error = game.progressGame(roomName, uid, word, image, chainUid)
     if error is None:
         return '', 200
     else:

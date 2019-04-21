@@ -10,7 +10,7 @@ const styles = {
   },
 };
 
-export default class DrawComponent extends Component {
+export default class GuessComponent extends Component {
   constructor(props) {
     super(props);
 
@@ -18,7 +18,7 @@ export default class DrawComponent extends Component {
     this.roomName = props.roomName;
     this.uid = props.uid;
     this.state = {
-      word: 'Loading word...'
+      image: 'Debug image...'
     };
   }
 
@@ -37,15 +37,15 @@ export default class DrawComponent extends Component {
    * Button Events                                                           *
    ***************************************************************************/
 
-  handleConfirmDrawing = (event) => {
-    if (!this.state.debug_image) {
-      window.alert("You didn't draw anything");
+  handleConfirmGuess = (event) => {
+    if (!this.state.guess) {
+      window.alert("You didn't guess anything");
       return;
     }
     const request = {
       roomName: this.roomName,
       uid: this.uid,
-      image: this.state.debug_image,
+      word: this.state.guess,
       chainUid: this.state.chainUid,
     };
     fetch('advance', {
@@ -71,23 +71,22 @@ export default class DrawComponent extends Component {
    * Render                                                                  *
    ***************************************************************************/
 
-  // TODO: This is ugly AF.
   render() {
     return (
       <div style={styles.layout}>
         <Typography>
-          You are drawing {this.state.nextNick}'s word "{this.state.word}".
+          You are guessing {this.state.nextNick}'s image "{this.state.image}"
         </Typography>
         <TextField
-          label='debug only'
-          value={this.state.debug_image}
-          onChange={(event) => this.setState({debug_image: event.target.value})}
+          label='What do you see?'
+          value={this.state.guess}
+          onChange={(event) => this.setState({guess: event.target.value})}
         />
         <Button
           variant='contained'
-          onClick={this.handleConfirmDrawing}
+          onClick={this.handleConfirmGuess}
         >
-          Finished Drawing
+          Guess
         </Button>
       </div>
     );
