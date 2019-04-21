@@ -55,6 +55,7 @@ export default class DrawComponent extends Component {
       this.chainRef.set({
         uid: this.state.uid,
         nickName: this.state.nickName,
+        image: this.state.debug_image,
       });
     }
     if (!this.state.ready) {

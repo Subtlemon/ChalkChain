@@ -49,13 +49,14 @@ export default class GuessComponent extends Component {
     }
 
     if (this.chainRef) {
-      this.chainRef.update({word:this.state.guess});
+      this.chainRef.update({word: this.state.guess});
     } else {
       // Push a new link in the chain and update server.
       this.chainRef = this.state.roomRef.child('chains').child(this.state.chainUid).push();
       this.chainRef.set({
         uid: this.state.uid,
-        nickName: this.state.nickName
+        nickName: this.state.nickName,
+        word: this.state.guess,
       });
     }
 
