@@ -67,7 +67,7 @@ class GameAPI:
             self._moveToNextState(roomName, uid, mainView='ROOM_VIEW', order=gameSettings[GAME_ORDER_HOP])
 
 
-    def progressGame(self, roomName, uid, chainUid):
+    def progressGame(self, roomName, uid):
         """
         """
         roomUrl = '%s/%s' % (ROOM_HOP, roomName)
@@ -93,7 +93,7 @@ class GameAPI:
             if response is None:
                 return 'Could not get game order information.'
             for uid in states.keys():
-                self._moveToNextState(roomName, uid, mainView, response, chainUid)
+                self._moveToNextState(roomName, uid, mainView, response, states[uid]['viewProps'].get('chainUid'))
 
 
     def _moveToNextState(self, roomName, uid, mainView, order, chainUid = None):
@@ -124,11 +124,12 @@ class GameAPI:
                     READY_PROP: False
             }
         elif mainView == START_STATE:
+            print('uid: %s chain %s' % (uid, chainUid))
             state = {
                     MAIN_VIEW: DRAW_STATE,
                     VIEW_PROPS: {
-                        'nextNick': order[uid]['nextNick'],
-                        'chainUid': order[chainUid]['next']
+                        'chainUid': order[uid]['next'],
+                        'nextNick': order[uid]['nextNick']
                     },
                     READY_PROP: False
             }
@@ -136,9 +137,9 @@ class GameAPI:
             state = {
                     MAIN_VIEW: GUESS_STATE,
                     VIEW_PROPS: {
+                        'chainUid': order[chainUid]['next'],
                         'nextNick': order[uid]['nextNick'],
-                        'next': order[uid]['next'],
-                        'chainUid': chainUid
+                        'next': order[uid]['next']
                     },
                     READY_PROP: False
             }
@@ -147,9 +148,9 @@ class GameAPI:
                     MAIN_VIEW: DRAW_STATE,
                     VIEW_PROPS: {
                         'nextNick': order[uid]['nextNick'],
-                        'next': order[uid]['next'],
-                        'chainUid': chainUid
+                        'next': order[uid]['next']
                     },
+                    'chainUid': order[chainUid]['next'],
                     READY_PROP: False
             }
         else:

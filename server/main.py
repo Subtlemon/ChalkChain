@@ -44,14 +44,14 @@ def startGame():
 @app.route('/advance', methods=['POST'])
 def progressGame():
     data = request.get_json()
+    print(data)
     if data is None:
         return 'Malformed request', 400
     roomName = data.get('roomName')
     uid = data.get('uid')
-    chainUid = data.get('chainUid')
-    if roomName is None or uid is None or chainUid is None:
+    if roomName is None or uid is None:
         return 'Malformed request', 400
-    error = game.progressGame(roomName, uid, chainUid)
+    error = game.progressGame(roomName, uid)
     if error is None:
         return '', 200
     else:

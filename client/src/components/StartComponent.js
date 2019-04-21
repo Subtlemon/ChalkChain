@@ -13,10 +13,14 @@ const styles = {
 export default class StartComponent extends Component {
   constructor(props) {
     super(props);
-    
-    this.state = {
-      ready: false
-    };
+  }
+
+  componentDidMount = () => {
+    this.setState({ready: false});
+  }
+
+  componentWillUnmount = () => {
+    delete this.chainRef;
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -39,8 +43,7 @@ export default class StartComponent extends Component {
       return;
     }
 
-    if (this.state.ready) {
-      // Already ready. Just update the last item in the chain.
+    if (this.chainRef) {
       this.chainRef.update({word: this.state.word});
     } else {
       this.chainRef = this.state.roomRef.child('chains').child(this.state.uid).push();
@@ -48,12 +51,13 @@ export default class StartComponent extends Component {
         word: this.state.word,
         uid: this.state.uid,
         nickName: this.state.nickName,
-        chainUid: this.state.uid,
       });
+    }
+
+    if (!this.state.ready) {
       const request = {
         roomName: this.state.roomName,
         uid: this.state.uid,
-        chainUid: this.state.uid
       };
       fetch('advance', {
         method: 'post',
