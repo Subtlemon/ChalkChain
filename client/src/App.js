@@ -82,7 +82,7 @@ class App extends Component {
   /**
    * Recursively attempts to create a room with a random name.
    *
-   * On success, calls onSuccess with room name and user ID.
+   * On success, calls onSuccess with room name, user ID, and nickname.
    * On error, returns error message.
    */
   createRandomRoom = (nickName, onSuccess, onError) => {
@@ -98,7 +98,7 @@ class App extends Component {
   /**
    * Attempts to create a room with roomName.
    * 
-   * On success, calls onSuccess with room name and user ID.
+   * On success, calls onSuccess with room name, user ID, and nickname.
    * On error, returns error message.
    * On room exists, calls onRoomExist with nickname, onSuccess, and onError.
    */
@@ -129,7 +129,7 @@ class App extends Component {
         // Note: This assumes set cannot fail.
         presenseRef.set({
           nickName: nickName
-        }).then(() => onSuccess(roomName, presenseRef.key));
+        }).then(() => onSuccess(roomName, presenseRef.key, nickName));
       }
     });
   }
@@ -137,7 +137,7 @@ class App extends Component {
   /**
    * Attempts to join a room with roomName.
    *
-   * On success, calls onSuccess with room name and user ID.
+   * On success, calls onSuccess with room name, user ID, and nickname.
    * On no room, calls onNoRoom.
    * This function cannot actually call onError.
    */
@@ -150,17 +150,18 @@ class App extends Component {
         // Note: This assumes set cannot fail.
         presenseRef.set({
           nickName: nickName
-        }).then(() => onSuccess(roomName, presenseRef.key));
+        }).then(() => onSuccess(roomName, presenseRef.key, nickName));
       } else {
         onNoRoom();
       }
     });
   }
 
-  onJoinedRoom = (roomName, userID) => {
+  onJoinedRoom = (roomName, userID, nickName) => {
     // Directly setting because I need it to be synchronous.
     this.state.roomName = roomName;
     this.state.uid = userID;
+    this.state.nickName = nickName;
     // Set a listener so server can issue state changes.
     let stateRef = firebase.database().ref('/rooms/' + roomName + '/states/' + userID);
     stateRef.on('value', this.onStateChange);
@@ -203,6 +204,7 @@ class App extends Component {
           viewProps={this.state.viewProps}
           roomName={this.state.roomName}
           uid={this.state.uid}
+          nickName={this.state.nickName}
           roomRef={firebase.database().ref('/rooms/' + this.state.roomName)}
         />
       );
@@ -213,6 +215,7 @@ class App extends Component {
           viewProps={this.state.viewProps}
           roomName={this.state.roomName}
           uid={this.state.uid}
+          nickName={this.state.nickName}
           roomRef={firebase.database().ref('/rooms/' + this.state.roomName)}
         />
       );
@@ -222,6 +225,7 @@ class App extends Component {
           viewProps={this.state.viewProps}
           roomName={this.state.roomName}
           uid={this.state.uid}
+          nickName={this.state.nickName}
           roomRef={firebase.database().ref('/rooms/' + this.state.roomName)}
         />
       );
@@ -231,6 +235,7 @@ class App extends Component {
           viewProps={this.state.viewProps}
           roomName={this.state.roomName}
           uid={this.state.uid}
+          nickName={this.state.nickName}
           roomRef={firebase.database().ref('/rooms/' + this.state.roomName)}
         />
       );

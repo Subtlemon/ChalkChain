@@ -67,19 +67,10 @@ class GameAPI:
             self._moveToNextState(roomName, uid, mainView='ROOM_VIEW', order=gameSettings[GAME_ORDER_HOP])
 
 
-    def progressGame(self, roomName, uid, word, image, chainUid):
+    def progressGame(self, roomName, uid, chainUid):
         """
         """
         roomUrl = '%s/%s' % (ROOM_HOP, roomName)
-        # Write word or image to chain.
-        if word is None:
-            dataKey = 'image'
-            dataValue = image
-        else:
-            dataKey = 'word'
-            dataValue = word
-        self.firebase.post('%s/%s/%s' % (roomUrl, CHAIN_HOP, chainUid),
-                {dataKey: dataValue, 'chainUid': chainUid, 'minerUid': uid})
 
         # Update self to ready.
         self.firebase.put('%s/%s/%s' % (roomUrl, USER_STATE_HOP, uid), 'ready', True)

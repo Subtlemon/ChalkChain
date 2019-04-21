@@ -14,9 +14,6 @@ export default class StartComponent extends Component {
   constructor(props) {
     super(props);
     
-    this.roomRef = props.roomRef;
-    this.roomName = props.roomName;
-    this.uid = props.uid;
     this.state = {
       ready: false
     };
@@ -24,7 +21,11 @@ export default class StartComponent extends Component {
 
   static getDerivedStateFromProps(props, state) {
     return {
-      prevNick: props.viewProps.prevNick
+      roomRef: props.roomRef,
+      roomName: props.roomName,
+      uid: props.uid,
+      nickName: props.nickName,
+      prevNick: props.viewProps.prevNick,
     };
   }
 
@@ -37,21 +38,33 @@ export default class StartComponent extends Component {
       window.alert('Please enter a word for people to draw');
       return;
     }
-    const request = {
-      roomName: this.roomName,
-      uid: this.uid,
-      word: this.state.word,
-      chainUid: this.uid
-    };
-    fetch('advance', {
-      method: 'post',
-      headers: {
-        'Content-type': 'application/json'
-      },
-      body: JSON.stringify(request)
-    }).then(this.statusHandler)
-    .then(() => this.setState({ready: true}))
-    .catch((error) => window.alert('Request failed: ' + error));
+
+    if (this.state.ready) {
+      // Already ready. Just update the last item in the chain.
+      this.chainRef.update({word: this.state.word});
+    } else {
+      this.chainRef = this.state.roomRef.child('chains').child(this.state.uid).push();
+      this.chainRef.set({
+        word: this.state.word,
+        uid: this.state.uid,
+        nickName: this.state.nickName,
+        chainUid: this.state.uid,
+      });
+      const request = {
+        roomName: this.state.roomName,
+        uid: this.state.uid,
+        chainUid: this.state.uid
+      };
+      fetch('advance', {
+        method: 'post',
+        headers: {
+          'Content-type': 'application/json'
+        },
+        body: JSON.stringify(request)
+      }).then(this.statusHandler)
+      .then(() => this.setState({ready: true}))
+      .catch((error) => window.alert('Request failed: ' + error));
+    }
   }
   
   statusHandler = (response) => {
