@@ -106,6 +106,7 @@ class App extends Component {
     // Note: This transaction is only to check existence of the room.
     return roomRef.transaction((currentData) => {
       if (currentData === null) {
+        // Not exactly sure if this does what I want, but it works, so :/
         return {
           users: null
         };
@@ -155,14 +156,14 @@ class App extends Component {
   }
 
   onJoinedRoom = (roomName, userID) => {
-    // TODO: This is a temporary method to jump into the room view. It should
-    // be replaced with a listener that switches to the room view based on data
-    // in the firebase database.
-    this.setState({
-      mainComponent: 'ROOM_VIEW',
-      mainComponentProps: {
-        roomRef: firebase.database().ref('/rooms/' + roomName),
-        roomName: roomName,
+    // Set a listener so server can issue state changes.
+    let stateRef = firebase.database().ref('/rooms/' + roomName + '/states/' + userID);
+    stateRef.on('value', this.onStateChange);
+    // This assumes set cannot fail.
+    stateRef.set({
+      mainView: 'ROOM_VIEW',
+      roomName: roomName,
+      viewProps: {
         uid: userID,
       },
     });
@@ -178,15 +179,26 @@ class App extends Component {
     }).join('').toUpperCase();
   }
 
+  /***************************************************************************
+   * Firebase Listeners                                                      *
+   ***************************************************************************/
+
+  onStateChange = (snapshot) => {
+    this.setState(snapshot.val());
+  }
 
   /***************************************************************************
    * Render                                                                  *
    ***************************************************************************/
 
   getMainComponent = () => {
-    if (this.state.mainComponent == 'ROOM_VIEW') {
+    if (this.state.mainView == 'ROOM_VIEW') {
       return (
-        <RoomComponent componentProps={this.state.mainComponentProps} />
+        <RoomComponent
+          viewProps={this.state.viewProps}
+          roomName={this.state.roomName}
+          roomRef={firebase.database().ref('/rooms/' + this.state.roomName)}
+        />
       );
     } else { // Default to ENTRY_VIEW.
       return (

@@ -15,24 +15,34 @@ export default class RoomComponent extends Component {
   constructor(props) {
     super(props);
 
-    this.roomRef = props.componentProps.roomRef;
-    this.roomName = props.componentProps.roomName;
-    this.uid = props.componentProps.uid;
+    this.roomRef = props.roomRef;
+    this.roomName = props.roomName;
+    this.uid = props.viewProps.uid;
     this.state = {
       users: []
     };
 
+  }
+
+  /***************************************************************************
+   * Lifecycle functions                                                     *
+   ***************************************************************************/
+
+  componentDidMount = () => {
     // Register a listener for users to update state.
-    let userRef = this.roomRef.child('users');
-    userRef.on('value', (snapshot) => {
-      console.log(snapshot.val());
+    this.userRef = this.roomRef.child('users');
+    this.userRef.on('value', (snapshot) => {
+      // Construct array of object's values' nickName.
       this.setState({
         users: Object.values(snapshot.val()).map((value) => {
-          console.log(value);
           return value.nickName;
         })
       });
     });
+  }
+
+  componentWillUnmount() {
+    this.userRef.off('value');
   }
 
   /***************************************************************************
