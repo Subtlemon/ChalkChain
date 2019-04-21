@@ -27,9 +27,32 @@ def index():
 @app.route('/start', methods=['POST'])
 def startGame():
     data = request.get_json()
-    if data is None or data['roomName'] is None or data['settings'] is None:
+    if data is None:
         return 'Malformed request', 400
-    error = game.startGame(data['roomName'], data['settings'])
+    roomName = data.get('roomName')
+    settings = data.get('settings')
+    if data is None or roomName is None or settings is None:
+        return 'Malformed request', 400
+    error = game.startGame(roomName, settings)
+    if error is None:
+        return '', 200
+    else:
+        print('Error: %s', error)
+        return error, 400
+
+# Route game progression requests.
+@app.route('/advance', methods=['POST'])
+def progressGame():
+    data = request.get_json()
+    if data is None:
+        return 'Malformed request', 400
+    roomName = data.get('roomName')
+    uid = data.get('uid')
+    word = data.get('word')
+    image = data.get('image')
+    if roomName is None or uid is None or (word is None and image is None):
+        return 'Malformed request', 400
+    error = game.progressGame(roomName, uid, word, image)
     if error is None:
         return '', 200
     else:

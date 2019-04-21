@@ -6,6 +6,7 @@ import './App.css';
 import Entry from './components/Entry';
 import RoomComponent from './components/RoomComponent';
 import StartComponent from './components/StartComponent';
+import DrawComponent from './components/DrawComponent';
 
 class App extends Component {
   constructor(props) {
@@ -156,13 +157,13 @@ class App extends Component {
   }
 
   onJoinedRoom = (roomName, userID) => {
-    this.setState({
-      roomName: roomName,
-      uid: userID
-    });
+    // Directly setting because I need it to be synchronous.
+    this.state.roomName = roomName;
+    this.state.uid = userID;
     // Set a listener so server can issue state changes.
     let stateRef = firebase.database().ref('/rooms/' + roomName + '/states/' + userID);
     stateRef.on('value', this.onStateChange);
+    stateRef.onDisconnect().remove();
     // This assumes set cannot fail.
     stateRef.set({
       mainView: 'ROOM_VIEW',
@@ -193,19 +194,33 @@ class App extends Component {
    ***************************************************************************/
 
   getMainComponent = () => {
+    // React compiler gives warnings for '==' string comparison. Disable it.
+    // eslint-disable-next-line
     if (this.state.mainView == 'ROOM_VIEW') {
       return (
         <RoomComponent
           viewProps={this.state.viewProps}
           roomName={this.state.roomName}
+          uid={this.state.uid}
           roomRef={firebase.database().ref('/rooms/' + this.state.roomName)}
         />
       );
+      // eslint-disable-next-line
     } else if (this.state.mainView == 'START_VIEW') {
       return (
         <StartComponent
           viewProps={this.state.viewProps}
           roomName={this.state.roomName}
+          uid={this.state.uid}
+          roomRef={firebase.database().ref('/rooms/' + this.state.roomName)}
+        />
+      );
+    } else if (this.state.mainView == 'DRAW_VIEW') {
+      return (
+        <DrawComponent
+          viewProps={this.state.viewProps}
+          roomName={this.state.roomName}
+          uid={this.state.uid}
           roomRef={firebase.database().ref('/rooms/' + this.state.roomName)}
         />
       );

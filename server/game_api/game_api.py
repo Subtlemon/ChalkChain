@@ -8,10 +8,12 @@ USERS_HOP = 'users'
 USER_STATE_HOP = 'states'
 GAME_STATE_HOP = 'game_state'
 GAME_ORDER_HOP = 'order'
+CHAIN_HOP = 'chains'
 
 class GameAPI:
     def __init__(self, firebase):
         self.firebase = firebase
+
 
     def startGame(self, roomName, gameSettings = None):
         """
@@ -64,23 +66,76 @@ class GameAPI:
         for uid in uids:
             self._moveToNextState(roomName, uid, mainView='ROOM_VIEW', order=gameSettings[GAME_ORDER_HOP])
 
+
+    def progressGame(self, roomName, uid, word, image):
+        """
+        """
+        roomUrl = '%s/%s' % (ROOM_HOP, roomName)
+        # Write word or image to chain.
+        if word is None:
+            dataKey = 'image'
+            dataValue = image
+        else:
+            dataKey = 'word'
+            dataValue = word
+        self.firebase.post('%s/%s' % (roomUrl, CHAIN_HOP), {dataKey: dataValue, 'uid': uid})
+
+        # Update self to ready.
+        self.firebase.put('%s/%s/%s' % (roomUrl, USER_STATE_HOP, uid), 'ready', True)
+
+        # Check if everybody else is ready. (ignoring race condition)
+        response = self.firebase.get(roomUrl, USER_STATE_HOP)
+        if response is None:
+            return 'Could not get room state information.'
+        states = response
+        allReady = True
+        for _, state in states.iteritems():
+            view = state['mainView']
+            # Ignore people in waiting room.
+            if view != 'ROOM_VIEW':
+                mainView = view
+                allReady = allReady and state.get('ready', False)
+
+        if allReady:
+            response = self.firebase.get('%s/%s' % (roomUrl, GAME_STATE_HOP), GAME_ORDER_HOP)
+            if response is None:
+                return 'Could not get game order information.'
+            for uid in states.keys():
+                self._moveToNextState(roomName, uid, mainView, response)
+
+
     def _moveToNextState(self, roomName, uid, mainView, order):
         """
         Responsible for moving an individual to the next state.
 
         TODO: This has no error handling.
         """
+        if uid not in order:
+            # Stay in the waiting room until everyone else is done.
+            return
         # ghetto enums
         MAIN_VIEW = 'mainView'
         VIEW_PROPS = 'viewProps'
+        READY_PROP = 'ready'
         WAITING_STATE = 'ROOM_VIEW'
         START_STATE = 'START_VIEW'
+        DRAW_STATE = 'DRAW_VIEW'
         if mainView == WAITING_STATE:
             state = {
                     MAIN_VIEW: START_STATE,
                     VIEW_PROPS: {
                         'prevNick': order[uid]['prevNick']
-                    }
+                    },
+                    READY_PROP: False
+            }
+        elif mainView == START_STATE:
+            state = {
+                MAIN_VIEW: DRAW_STATE,
+                VIEW_PROPS: {
+                    'nextNick': order[uid]['nextNick'],
+                    'next': order[uid]['next']
+                },
+                READY_PROP: False
             }
         else:
             # Move everyone back to the waiting room.
