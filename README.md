@@ -33,6 +33,17 @@ Highly recommend doing all this in an Anaconda environment.
 `npm run build`
 4. View by opening client/build/index.html in any browser.
 
+# Set up firebase cloud functions (once)
+
+1. cd to firebase directory.  
+`cd firebase`
+2. Install firebase tools.  
+`npm install -g firebase-tools`
+3. Init.  
+`firebase init`
+4. Deploy. If you make changes to cloud functions, you will have to deploy again.  
+`firebase deploy`
+
 ## Run Locally without GAE (not recommended)
 
 1. Preflight.
