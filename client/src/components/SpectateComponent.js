@@ -77,7 +77,33 @@ export default class SpectateComponent extends Component {
    * Button Events                                                           *
    ***************************************************************************/
 
-  
+  handleStartSync = (event) => {
+    this.sharedRef.set({
+      chainUid: this.state.uid,
+    });
+  }
+
+  handleNext = (event) => {
+    const chainUids = Object.keys(this.state.chains);
+    let idx = chainUids.indexOf(this.state.sharedState.chainUid) + 1;
+    if (idx >= chainUids.length) {
+      idx = 0;
+    }
+    this.sharedRef.set({
+      chainUid: chainUids[idx],
+    });
+  }
+
+  handlePrevious = (event) => {
+    const chainUids = Object.keys(this.state.chains);
+    let idx = chainUids.indexOf(this.state.sharedState.chainUid);
+    if (idx == 0) {
+      idx = chainUids.length;
+    }
+    this.sharedRef.set({
+      chainUid: chainUids[idx-1],
+    });
+  }
 
   /***************************************************************************
    * HTTPS Request Helpers                                                   *
@@ -126,15 +152,31 @@ export default class SpectateComponent extends Component {
   getButtons = () => {
     if (this.state.synced) {
       return (
-        <Typography>
-          debug synced
-        </Typography>
+        <div style={styles.buttonContainer}>
+          <Button
+            variant='contained'
+            onClick={this.handlePrevious}
+          >
+            Previous Chain
+          </Button>
+          <Button
+            variant='contained'
+            onClick={this.handleNext}
+          >
+            Next Chain
+          </Button>
+        </div>
       );
     } else {
       return (
-        <Typography>
-          debug not synced
-        </Typography>
+        <div style={styles.buttonContainer}>
+          <Button
+            variant='contained'
+            onClick={this.handleStartSync}
+          >
+            Review Results
+          </Button>
+        </div>
       );
     }
   }
