@@ -197,9 +197,7 @@ class App extends Component {
    ***************************************************************************/
 
   getMainComponent = () => {
-    // React compiler gives warnings for '==' string comparison. Disable it.
-    // eslint-disable-next-line
-    if (this.state.mainView == 'ROOM_VIEW') {
+    if (this.state.mainView === 'ROOM_VIEW') {
       return (
         <RoomComponent
           viewProps={this.state.viewProps}
@@ -209,8 +207,7 @@ class App extends Component {
           roomRef={firebase.database().ref('/rooms/' + this.state.roomName)}
         />
       );
-      // eslint-disable-next-line
-    } else if (this.state.mainView == 'START_VIEW') {
+    } else if (this.state.mainView === 'START_VIEW') {
       return (
         <StartComponent
           viewProps={this.state.viewProps}
@@ -220,7 +217,7 @@ class App extends Component {
           roomRef={firebase.database().ref('/rooms/' + this.state.roomName)}
         />
       );
-    } else if (this.state.mainView == 'DRAW_VIEW') {
+    } else if (this.state.mainView === 'DRAW_VIEW') {
       return (
         <DrawComponent
           viewProps={this.state.viewProps}
@@ -230,7 +227,7 @@ class App extends Component {
           roomRef={firebase.database().ref('/rooms/' + this.state.roomName)}
         />
       );
-    } else if (this.state.mainView == 'GUESS_VIEW') {
+    } else if (this.state.mainView === 'GUESS_VIEW') {
       return (
         <GuessComponent
           viewProps={this.state.viewProps}
@@ -240,7 +237,7 @@ class App extends Component {
           roomRef={firebase.database().ref('/rooms/' + this.state.roomName)}
         />
       );
-    } else if (this.state.mainView == 'SPECTATE_VIEW') {
+    } else if (this.state.mainView === 'SPECTATE_VIEW') {
       return (
         <SpectateComponent
           viewProps={this.state.viewProps}
