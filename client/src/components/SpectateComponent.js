@@ -61,6 +61,8 @@ export default class SpectateComponent extends Component {
   }
 
   componentWillUnmount() {
+    let gameRef = this.state.roomRef.child('in_game').child(this.state.uid);
+    gameRef.remove().then(() => {gameRef.cancel()});
     this.sharedRef.off('value');
   }
 
@@ -104,16 +106,11 @@ export default class SpectateComponent extends Component {
     });
   }
 
-  /***************************************************************************
-   * HTTPS Request Helpers                                                   *
-   ***************************************************************************/
-
-  statusHandler = (response) => {
-    if (response.status >= 200 && response.status < 300) {
-      return Promise.resolve(response);
-    } else {
-      return Promise.reject(new Error(response.statusText));
-    }
+  handleLeave = (event) => {
+    this.state.roomRef.child('states').child(this.state.uid).set({
+      mainView: 'ROOM_VIEW',
+      viewProps: {},
+    });
   }
 
   /***************************************************************************
@@ -163,6 +160,12 @@ export default class SpectateComponent extends Component {
             onClick={this.handleNext}
           >
             Next Chain
+          </Button>
+          <Button
+            variant='contained'
+            onClick={this.handleLeave}
+          >
+            Back to Waiting Room
           </Button>
         </div>
       );

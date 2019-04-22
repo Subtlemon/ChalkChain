@@ -16,6 +16,10 @@ export default class StartComponent extends Component {
   }
 
   componentDidMount = () => {
+    // Establish presense in game.
+    let presenseRef = this.state.roomRef.child('in_game').child(this.state.uid);
+    presenseRef.onDisconnect().remove();
+    presenseRef.set(this.state.nickName);
     this.setState({ready: false});
   }
 
