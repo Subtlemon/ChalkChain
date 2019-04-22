@@ -56,7 +56,6 @@ export default class SpectateComponent extends Component {
         this.setState({
           chains: chains,
         });
-        console.log(chains);
       }
     });
   }

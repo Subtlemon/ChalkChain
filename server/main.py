@@ -14,6 +14,7 @@ TEMPLATE_PATH = os.path.join(BASE_PATH, 'client', 'build')
 STATIC_PATH = os.path.join(BASE_PATH, 'client', 'build', 'static')
 
 app = Flask(__name__, static_folder=STATIC_PATH, template_folder=TEMPLATE_PATH)
+# TODO: Change URL to be configurable.
 firebase = firebase.FirebaseApplication('https://chalkchain.firebaseio.com', None)
 game = game_api.GameAPI(firebase)
 
@@ -22,6 +23,7 @@ game = game_api.GameAPI(firebase)
 @app.route('/')
 def index():
     return render_template('index.html')
+
 
 # Route game start request.
 @app.route('/start', methods=['POST'])
@@ -40,11 +42,11 @@ def startGame():
         print('Error: %s', error)
         return error, 400
 
+
 # Route game progression requests.
 @app.route('/advance', methods=['POST'])
 def progressGame():
     data = request.get_json()
-    print(data)
     if data is None:
         return 'Malformed request', 400
     roomName = data.get('roomName')
@@ -58,20 +60,6 @@ def progressGame():
         print('Error: %s', error)
         return error, 400
 
-# Route post requests.
-@app.route('/create', methods=['GET', 'POST'])
-def create_room():
-    print(request.json)
-    # TODO: Make an actual reply.
-    response = {'streamURL': 'invalid', 'nickname': 'none'}
-    return json.dumps(response)
-
-@app.route('/join', methods=['GET', 'POST'])
-def join_room():
-    print(request.json)
-    # TODO: Make an actual reply.
-    response = {'streamURL': 'invalid', 'nickname': 'none'}
-    return json.dumps(response)
 
 @app.route('/test')
 def test():
@@ -80,9 +68,11 @@ def test():
     print(result)
     return "<html><head></head><body><h1>hello world!</h1></body></html>"
 
+
 @app.route('/<path:path>')
 def catch_all(path):
     abort(404)
+
 
 if __name__ == '__main__':
     app.run()
