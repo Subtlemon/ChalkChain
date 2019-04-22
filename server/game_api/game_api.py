@@ -104,8 +104,6 @@ class GameAPI:
         """
         if uid not in order:
             # Stay in the waiting room until everyone else is done.
-            print('uid ' + uid + ' was not in order')
-            print(order)
             return
         # ghetto enums
         MAIN_VIEW = 'mainView'
@@ -115,6 +113,7 @@ class GameAPI:
         START_STATE = 'START_VIEW'
         DRAW_STATE = 'DRAW_VIEW'
         GUESS_STATE = 'GUESS_VIEW'
+        SPECTATE_STATE = 'SPECTATE_VIEW'
         if mainView == WAITING_STATE:
             state = {
                     MAIN_VIEW: START_STATE,
@@ -133,6 +132,14 @@ class GameAPI:
                     },
                     READY_PROP: False
             }
+        elif chainUid is not None and order[chainUid]['next'] == uid:
+            state = {
+                    MAIN_VIEW: SPECTATE_STATE,
+                    VIEW_PROPS: {},
+            }
+        elif mainView == SPECTATE_STATE:
+            # Don't know how this happened, but ignore it.
+            return
         elif mainView == DRAW_STATE:
             state = {
                     MAIN_VIEW: GUESS_STATE,

@@ -17,9 +17,6 @@ export default class RoomComponent extends Component {
   constructor(props) {
     super(props);
 
-    this.roomRef = props.roomRef;
-    this.roomName = props.roomName;
-    this.uid = props.uid;
     this.state = {
       users: [],
       sharedState: {
@@ -34,7 +31,7 @@ export default class RoomComponent extends Component {
 
   componentDidMount = () => {
     // Register a listener for users to update list of users in room.
-    this.userRef = this.roomRef.child('users');
+    this.userRef = this.state.roomRef.child('users');
     this.userRef.on('value', (snapshot) => {
       // Construct array of object's values' nickName.
       this.setState({
@@ -45,7 +42,7 @@ export default class RoomComponent extends Component {
     });
 
     // Register a listener for shared room state, such as round time limit.
-    this.sharedRef = this.roomRef.child('waiting_room_state');
+    this.sharedRef = this.state.roomRef.child('waiting_room_state');
     this.sharedRef.on('value', (snapshot) => {
       if (snapshot.val()) {
         this.setState({
@@ -60,6 +57,14 @@ export default class RoomComponent extends Component {
     this.sharedRef.off('value');
   }
 
+  static getDerivedStateFromProps(props, state) {
+    return {
+      roomRef: props.roomRef,
+      roomName: props.roomName,
+      uid: props.uid,
+    };
+  }
+
   /***************************************************************************
    * Button Events                                                           *
    ***************************************************************************/
@@ -71,7 +76,7 @@ export default class RoomComponent extends Component {
 
   handleStartButton = (event) => {
     const request = {
-      roomName: this.roomName,
+      roomName: this.state.roomName,
       settings: this.state.sharedState,
     };
     // Save shared state to firebase, then ask server to start game.
@@ -110,7 +115,7 @@ export default class RoomComponent extends Component {
         <ListItem>
           <ListItemText primary={user} />
         </ListItem>
-      )
+      );
     });
   }
 
@@ -119,7 +124,7 @@ export default class RoomComponent extends Component {
     return (
       <div style={styles.layout}>
         <Typography>
-          Room name: {this.roomName}
+          Room name: {this.state.roomName}
         </Typography>
         <TextField
           label='Seconds per drawing'
