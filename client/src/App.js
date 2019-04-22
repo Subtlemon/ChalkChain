@@ -260,13 +260,11 @@ class App extends Component {
     }
   }
 
-  // TODO: I am only using this for testing.
   render() {
     return (
       <div className="App">
         <header className="App-header">
-          <RoomComponent roomName='test'
-            roomRef={firebase.database().ref('/rooms/test')} />
+          {this.getMainComponent()}
         </header>
       </div>
     );

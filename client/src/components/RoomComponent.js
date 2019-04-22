@@ -1,13 +1,19 @@
 import React, { Component } from 'react';
 
+// Material-ui core.
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
+
+// Icons.
+import UserActive from '@material-ui/icons/AccountBox';
+import UserInactive from '@material-ui/icons/AccountBox';
 
 const styles = {
   layout: {
@@ -15,6 +21,7 @@ const styles = {
   },
   paper: {
     padding: '30px',
+    margin: '10px',
   },
   divider: {
     margin: '10px',
@@ -131,14 +138,25 @@ export default class RoomComponent extends Component {
    ***************************************************************************/
 
   getUserListItems = () => {
-    const REMOVE_ME = ['hello', 'world'];
-    return REMOVE_ME.map((user) => {
+    if (this.state.users && this.state.users.length) {
+      return this.state.users.map((user) => {
+        return (
+          <ListItem>
+            <ListItemIcon>
+              <UserActive />
+            </ListItemIcon>
+            <ListItemText primary={user} primaryTypographyProps={{variant: 'h6'}} />
+          </ListItem>
+        );
+      }).reduce((prev, curr) => [prev, <Divider/>, curr]);
+    } else {
       return (
         <ListItem>
-          <ListItemText primary={user} />
+          <ListItemText primary="You've somehow entered a ghost room.
+            It's probably in your best interest to leave."/>
         </ListItem>
       );
-    });
+    }
   }
 
   // TODO: This is ugly AF.
@@ -170,23 +188,18 @@ export default class RoomComponent extends Component {
                 style={styles.textField}
               />
             </div>
-            <Button
-              variant='contained'
-              onClick={this.handleSaveButton}
-            >
-              Save Settings
-            </Button>
+            <Button variant='contained' onClick={this.handleSaveButton}>Save Settings</Button>
           </div>
         </Paper>
-        <Button
-          variant='contained'
-          onClick={this.handleStartButton}
-        >
-          Start Game
-        </Button>
-        <List>
-          {this.getUserListItems()}
-        </List>
+        <Paper style={styles.paper}>
+          <Typography variant='h5'>
+            Lobby
+          </Typography>
+          <List>
+            {this.getUserListItems()}
+          </List>
+          <Button variant='contained' onClick={this.handleStartButton}>Start Game</Button>
+        </Paper>
       </div>
     );
   }
