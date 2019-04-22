@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 
 import Button from '@material-ui/core/Button';
+import Divider from '@material-ui/core/Divider';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
+import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 
@@ -11,6 +13,23 @@ const styles = {
   layout: {
 
   },
+  paper: {
+    padding: '30px',
+  },
+  divider: {
+    margin: '10px',
+  },
+  settingsContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  settingsRow: {
+    marginBottom: '10px',
+  },
+  textField: {
+    marginLeft: '5px',
+    marginRight: '5px',
+  }
 };
 
 export default class RoomComponent extends Component {
@@ -33,12 +52,14 @@ export default class RoomComponent extends Component {
     // Register a listener for users to update list of users in room.
     this.userRef = this.state.roomRef.child('users');
     this.userRef.on('value', (snapshot) => {
-      // Construct array of object's values' nickName.
-      this.setState({
-        users: Object.values(snapshot.val()).map((value) => {
-          return value.nickName;
-        })
-      });
+      if (snapshot.val()) {
+        // Construct array of object's values' nickName.
+        this.setState({
+          users: Object.values(snapshot.val()).map((value) => {
+            return value.nickName;
+          })
+        });
+      }
     });
 
     // Register a listener for shared room state, such as round time limit.
@@ -110,7 +131,8 @@ export default class RoomComponent extends Component {
    ***************************************************************************/
 
   getUserListItems = () => {
-    return this.state.users.map((user) => {
+    const REMOVE_ME = ['hello', 'world'];
+    return REMOVE_ME.map((user) => {
       return (
         <ListItem>
           <ListItemText primary={user} />
@@ -123,20 +145,39 @@ export default class RoomComponent extends Component {
   render() {
     return (
       <div style={styles.layout}>
-        <Typography>
-          Room name: {this.state.roomName}
-        </Typography>
-        <TextField
-          label='Seconds per drawing'
-          value={this.state.sharedState.drawTime}
-          onChange={(event) => this.setState({sharedState: {drawTime: event.target.value}})}
-        />
-        <Button
-          variant='contained'
-          onClick={this.handleSaveButton}
-        >
-          Save Settings
-        </Button>
+        <Paper style={styles.paper}>
+          <Typography variant='h4'>
+            Room Name: {this.state.roomName}
+          </Typography>
+          <Typography variant='subtitle1'>
+            Ask your friends to join using the above room name!
+          </Typography>
+          <Divider variant='middle' style={styles.divider} />
+          <div style={styles.settingsContainer}>
+            <div style={styles.settingsRow}>
+              <TextField
+                label='Round Theme'
+                value={this.state.sharedState.theme}
+                onChange={(event) => this.setState({sharedState: {theme: event.target.value}})}
+                style={styles.textField}
+              />
+              <TextField
+                required
+                label='Seconds per drawing'
+                type='number'
+                value={this.state.sharedState.drawTime}
+                onChange={(event) => this.setState({sharedState: {drawTime: event.target.value}})}
+                style={styles.textField}
+              />
+            </div>
+            <Button
+              variant='contained'
+              onClick={this.handleSaveButton}
+            >
+              Save Settings
+            </Button>
+          </div>
+        </Paper>
         <Button
           variant='contained'
           onClick={this.handleStartButton}
