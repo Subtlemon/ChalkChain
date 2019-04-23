@@ -1,12 +1,16 @@
 import React, { Component } from 'react';
 
 import Button from '@material-ui/core/Button';
+import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 
 const styles = {
   layout: {
 
+  },
+  paper: {
+    padding: '20px',
   },
 };
 
@@ -91,20 +95,22 @@ export default class StartComponent extends Component {
   render() {
     return (
       <div style={styles.layout}>
-        <Typography>
-          You are selecting a word for: {this.state.prevNick}
-        </Typography>
-        <TextField
-          label='Your word'
-          value={this.state.word}
-          onChange={(event) => this.setState({word: event.target.value})}
-        />
-        <Button
-          variant='contained'
-          onClick={this.handleConfirmWord}
-        >
-          Confirm
-        </Button>
+        <Paper style={styles.paper}>
+          <Typography variant='h6'>
+            You are selecting a word for: {this.state.prevNick}
+          </Typography>
+          <TextField
+            label='Your word'
+            value={this.state.word}
+            onChange={(event) => this.setState({word: event.target.value})}
+          />
+          <Button
+            variant='contained'
+            onClick={this.handleConfirmWord}
+          >
+            {this.state.ready ? 'Reconfirm' : 'Confirm'}
+          </Button>
+        </Paper>
       </div>
     );
   }
