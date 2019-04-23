@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
 import Button from '@material-ui/core/Button';
+import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 
@@ -8,6 +9,11 @@ const styles = {
   layout: {
 
   },
+  paper: {
+    padding: '20px',
+    display: 'flex',
+    flexDirection: 'column',
+  }
 };
 
 export default class GuessComponent extends Component {
@@ -93,20 +99,25 @@ export default class GuessComponent extends Component {
   render() {
     return (
       <div style={styles.layout}>
-        <Typography>
-          You are guessing {this.state.nextNick}'s image "{this.state.image}"
-        </Typography>
-        <TextField
-          label='What do you see?'
-          value={this.state.guess}
-          onChange={(event) => this.setState({guess: event.target.value})}
-        />
-        <Button
-          variant='contained'
-          onClick={this.handleConfirmGuess}
-        >
-          Guess
-        </Button>
+        <Paper style={styles.paper}>
+          <Typography variant='h6'>
+            You are guessing {this.state.nextNick}'s image "{this.state.image}"
+          </Typography>
+          <img alt='TODO: Load image from chain' src='' />
+          <div>
+            <TextField
+              label='What do you see?'
+              value={this.state.guess}
+              onChange={(event) => this.setState({guess: event.target.value})}
+            />
+            <Button
+              variant='contained'
+              onClick={this.handleConfirmGuess}
+            >
+              Guess
+            </Button>
+          </div>
+        </Paper>
       </div>
     );
   }
