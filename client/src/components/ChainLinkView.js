@@ -26,8 +26,8 @@ export default class ChainLinkView extends Component {
   getMainComponent = () => {
     if (this.state.data.word) {
       return (
-        <Typography>
-          {this.state.data.nickName} guessed: {this.state.data.word}
+        <Typography variant='subtitle1'>
+          <b>{this.state.data.nickName}</b> guessed: <b>{this.state.data.word}</b>
         </Typography>
       );
     } else {

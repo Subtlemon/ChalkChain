@@ -148,7 +148,7 @@ export default class RoomComponent extends Component {
             <ListItemText primary={user} primaryTypographyProps={{variant: 'h6'}} />
           </ListItem>
         );
-      }).reduce((prev, curr) => [prev, <Divider/>, curr]);
+      }).reduce((prev, curr) => [prev, <Divider />, curr]);
     } else {
       return (
         <ListItem>

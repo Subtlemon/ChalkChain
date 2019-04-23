@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 
 import Button from '@material-ui/core/Button';
+import Divider from '@material-ui/core/Divider';
+import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 
 import ChainLinkView from './ChainLinkView';
@@ -12,8 +14,15 @@ const styles = {
   chainContainer: {
 
   },
-  chainLink: {
-
+  divider: {
+    margin: '10px',
+  },
+  paper: {
+    padding: '20px',
+    margin: '10px',
+  },
+  headerContainer: {
+    maxWidth: '500px',
   },
 };
 
@@ -118,14 +127,25 @@ export default class SpectateComponent extends Component {
    ***************************************************************************/
 
   getChainItems = (chainUid) => {
-    return this.state.chains[chainUid].map((chainLink) => {
-      return (
-        <ChainLinkView data={chainLink} style={styles.chainLink} />
-      );
-    });
+    return [
+      <Typography variant='h6'>
+        Your word was: <b>{this.state.chains[chainUid][0].word}</b>
+      </Typography>,
+      <Divider style={styles.divider} />,
+      this.state.chains[chainUid].slice(1).map((chainLink) => {
+        return (
+          <ChainLinkView data={chainLink} />
+        );
+      }),
+    ];
   }
   
   getMainComponent = () => {
+    return (
+      <div style={styles.chainContainer}>
+        {this.getChainItems()}
+      </div>
+    );
     if (this.state.chains) {
       let chainUid = this.state.uid;
       if (this.state.sharedState && this.state.sharedState.chainUid) {
@@ -145,10 +165,16 @@ export default class SpectateComponent extends Component {
     }
   }
 
-  getButtons = () => {
+  getHeader = () => {
     if (this.state.synced) {
       return (
-        <div style={styles.buttonContainer}>
+        <div>
+          <Typography variant='h5'>
+            Reviewing Results
+          </Typography>
+          <Typography variant='subtitle1'>
+            Let's see the results with everyone!
+          </Typography>
           <Button
             variant='contained'
             onClick={this.handlePrevious}
@@ -161,6 +187,33 @@ export default class SpectateComponent extends Component {
           >
             Next Chain
           </Button>
+        </div>
+      );
+    } else {
+      return(
+        <div style={styles.headerContainer}>
+          <Typography variant='h5'>
+            Your Chain
+          </Typography>
+          <Typography variant='subtitle1'>
+            Take a sneak peak at how your chalk chain turned out,
+            then join everyone else in reviewing their results!
+          </Typography>
+          <Button
+            variant='contained'
+            onClick={this.handleStartSync}
+          >
+            Review Results
+          </Button>
+        </div>
+      );
+    }
+  }
+
+  getButtons = () => {
+    if (this.state.synced) {
+      return (
+        <div style={styles.buttonContainer}>
           <Button
             variant='contained'
             onClick={this.handleLeave}
@@ -187,8 +240,18 @@ export default class SpectateComponent extends Component {
   render() {
     return (
       <div style={styles.layout}>
-        {this.getMainComponent()}
-        {this.getButtons()}
+        <Paper style={styles.paper}>
+          {this.getHeader()}
+        </Paper>
+        <Paper style={styles.paper}>
+          {this.getMainComponent()}
+          <Button
+            variant='contained'
+            onClick={this.handleLeave}
+          >
+            Back to Waiting Room
+          </Button>
+        </Paper>
       </div>
     );
   };
