@@ -4,6 +4,8 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 
+import DrawCanvas from './DrawCanvas';
+
 const styles = {
   layout: {
 
@@ -94,8 +96,9 @@ export default class DrawComponent extends Component {
     return (
       <div style={styles.layout}>
         <Typography>
-          You are drawing {this.state.nextNick}'s word "{this.state.word}".
+          You are drawing <b>{this.state.nextNick}</b>'s word: <b>{this.state.word}</b>.
         </Typography>
+        <DrawCanvas ref='canvas' style={{height: '500px'}}/>
         <TextField
           label='debug only'
           value={this.state.debug_image}
