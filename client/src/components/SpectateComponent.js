@@ -71,7 +71,7 @@ export default class SpectateComponent extends Component {
 
   componentWillUnmount() {
     let gameRef = this.state.roomRef.child('in_game').child(this.state.uid);
-    gameRef.remove().then(() => {gameRef.cancel()});
+    gameRef.remove().then(() => {gameRef.onDisconnect().cancel()});
     this.sharedRef.off('value');
   }
 
@@ -107,7 +107,7 @@ export default class SpectateComponent extends Component {
   handlePrevious = (event) => {
     const chainUids = Object.keys(this.state.chains);
     let idx = chainUids.indexOf(this.state.sharedState.chainUid);
-    if (idx == 0) {
+    if (idx === 0) {
       idx = chainUids.length;
     }
     this.sharedRef.set({
@@ -141,11 +141,6 @@ export default class SpectateComponent extends Component {
   }
   
   getMainComponent = () => {
-    return (
-      <div style={styles.chainContainer}>
-        {this.getChainItems()}
-      </div>
-    );
     if (this.state.chains) {
       let chainUid = this.state.uid;
       if (this.state.sharedState && this.state.sharedState.chainUid) {
@@ -178,12 +173,14 @@ export default class SpectateComponent extends Component {
           <Button
             variant='contained'
             onClick={this.handlePrevious}
+            style={{margin: '5px'}}
           >
             Previous Chain
           </Button>
           <Button
             variant='contained'
             onClick={this.handleNext}
+            style={{margin: '5px'}}
           >
             Next Chain
           </Button>
@@ -210,33 +207,6 @@ export default class SpectateComponent extends Component {
     }
   }
 
-  getButtons = () => {
-    if (this.state.synced) {
-      return (
-        <div style={styles.buttonContainer}>
-          <Button
-            variant='contained'
-            onClick={this.handleLeave}
-          >
-            Back to Waiting Room
-          </Button>
-        </div>
-      );
-    } else {
-      return (
-        <div style={styles.buttonContainer}>
-          <Button
-            variant='contained'
-            onClick={this.handleStartSync}
-          >
-            Review Results
-          </Button>
-        </div>
-      );
-    }
-  }
-
-  // TODO: This is ugly AF.
   render() {
     return (
       <div style={styles.layout}>
@@ -245,6 +215,7 @@ export default class SpectateComponent extends Component {
         </Paper>
         <Paper style={styles.paper}>
           {this.getMainComponent()}
+          <Divider style={styles.divider} />
           <Button
             variant='contained'
             onClick={this.handleLeave}

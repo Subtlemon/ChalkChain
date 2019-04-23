@@ -91,13 +91,12 @@ export default class StartComponent extends Component {
    * Render                                                                  *
    ***************************************************************************/
 
-  // TODO: This is ugly AF.
   render() {
     return (
       <div style={styles.layout}>
         <Paper style={styles.paper}>
           <Typography variant='h6'>
-            You are selecting a word for: {this.state.prevNick}
+            You are selecting a word for: <b>{this.state.prevNick}</b>
           </Typography>
           <TextField
             label='Your word'

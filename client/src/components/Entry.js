@@ -8,6 +8,9 @@ const styles = {
   layout: {
     
   },
+  textField: {
+    margin: '5px',
+  },
 }
 
 /**
@@ -74,24 +77,27 @@ export default class Entry extends Component {
             label='Room Name'
             value={this.state.roomName}
             onChange={(event) => this.setState({roomName: event.target.value})}
+            style={styles.textField}
           />
           <TextField
+            required
             label='Nickname'
             value={this.state.nickName}
             onChange={(event) => this.setState({nickName: event.target.value})}
+            style={styles.textField}
           />
           <div style={{display: 'flex', flexDirection: 'row'}}>
             <Button
               variant='contained'
               onClick={this.handleCreateRoom}
-              style={{flex: '1 1 auto'}}
+              style={{flex: '1 1 auto', margin: '5px'}}
             >
               Create Room
             </Button>
             <Button
               variant='contained'
               onClick={this.handleJoinRoom}
-              style={{flex: '1 1 auto'}}
+              style={{flex: '1 1 auto', margin: '5px'}}
             >
               Join Room
             </Button>

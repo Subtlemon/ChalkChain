@@ -159,13 +159,12 @@ export default class RoomComponent extends Component {
     }
   }
 
-  // TODO: This is ugly AF.
   render() {
     return (
       <div style={styles.layout}>
         <Paper style={styles.paper}>
           <Typography variant='h4'>
-            Room Name: {this.state.roomName}
+            Room Name: <b>{this.state.roomName}</b>
           </Typography>
           <Typography variant='subtitle1'>
             Ask your friends to join using the above room name!

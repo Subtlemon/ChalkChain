@@ -101,9 +101,9 @@ export default class GuessComponent extends Component {
       <div style={styles.layout}>
         <Paper style={styles.paper}>
           <Typography variant='h6'>
-            You are guessing {this.state.nextNick}'s image "{this.state.image}"
+            You are guessing <b>{this.state.nextNick}</b>'s image "{this.state.image}"
           </Typography>
-          <img alt='TODO: Load image from chain' src='' />
+          <img alt='TODO, load image from chain' src='' />
           <div>
             <TextField
               label='What do you see?'
