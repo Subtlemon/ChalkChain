@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import logo from '../logo.svg';
 
 import Button from '@material-ui/core/Button';
+import Link from '@material-ui/core/Link';
 import TextField from '@material-ui/core/TextField';
 
 const styles = {
@@ -102,6 +103,9 @@ export default class Entry extends Component {
               Join Room
             </Button>
           </div>
+          <Link href='https://github.com/Subtlemon/ChalkChain' variant='body1'>
+            View Source on Github
+          </Link>
         </div>
       </div>
     );
