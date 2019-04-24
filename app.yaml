@@ -14,3 +14,4 @@ handlers:
 
 skip_files:
 - client/node_modules
+- firebase

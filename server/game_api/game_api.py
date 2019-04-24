@@ -154,10 +154,10 @@ class GameAPI:
             state = {
                     MAIN_VIEW: DRAW_STATE,
                     VIEW_PROPS: {
+                        'chainUid': order[chainUid]['next'],
                         'nextNick': order[uid]['nextNick'],
                         'next': order[uid]['next']
                     },
-                    'chainUid': order[chainUid]['next'],
                     READY_PROP: False
             }
         else:

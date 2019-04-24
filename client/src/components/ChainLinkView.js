@@ -32,7 +32,7 @@ export default class ChainLinkView extends Component {
       );
     } else {
       return [
-        <Typography>
+        <Typography variant='subtitle1'>
           <b>{this.state.data.nickName}</b> drew this:
         </Typography>,
         <img src={this.state.data.image} alt='Broken Image, Sorry!'/>
@@ -40,7 +40,6 @@ export default class ChainLinkView extends Component {
     }
   }
 
-  // TODO: This is ugly AF.
   render() {
     return (
       <div style={styles.layout}>
@@ -48,5 +47,4 @@ export default class ChainLinkView extends Component {
       </div>
     );
   }
-
 };
