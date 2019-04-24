@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
 import Button from '@material-ui/core/Button';
+import Divider from '@material-ui/core/Divider';
 import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
@@ -11,9 +12,10 @@ const styles = {
   },
   paper: {
     padding: '20px',
-    display: 'flex',
-    flexDirection: 'column',
-  }
+  },
+  divider: {
+    margin: '10px',
+  },
 };
 
 export default class GuessComponent extends Component {
@@ -21,12 +23,20 @@ export default class GuessComponent extends Component {
     super(props);
 
     this.state = {
-      image: 'Debug image...'
+      ready: false,
     };
   }
 
   componentDidMount = () => {
     this.setState({ready: false});
+    this.state.roomRef.child('chains')
+      .child(this.state.chainUid)
+      .limitToLast(1)
+      .once('child_added', (snapshot) => {
+        if (snapshot.val()) {
+          this.refs.img.src = snapshot.val().image;
+        }
+      });
   }
 
   componentWillUnount = () => {
@@ -101,22 +111,26 @@ export default class GuessComponent extends Component {
       <div style={styles.layout}>
         <Paper style={styles.paper}>
           <Typography variant='h6'>
-            You are guessing <b>{this.state.nextNick}</b>'s image "{this.state.image}"
+            You are guessing <b>{this.state.nextNick}</b>'s image:
           </Typography>
-          <img alt='TODO, load image from chain' src='' />
-          <div>
-            <TextField
-              label='What do you see?'
-              value={this.state.guess}
-              onChange={(event) => this.setState({guess: event.target.value})}
-            />
-            <Button
-              variant='contained'
-              onClick={this.handleConfirmGuess}
-            >
-              {this.state.ready ? 'Guess Again' : 'Guess'}
-            </Button>
-          </div>
+        </Paper>
+        <Divider style={styles.divider}/>
+        <Paper>
+          <img ref='img' alt='TODO, load image from chain' src='' />
+        </Paper>
+        <Divider style={styles.divider} />
+        <Paper style={styles.paper}>
+          <TextField
+            label='What do you see?'
+            value={this.state.guess}
+            onChange={(event) => this.setState({guess: event.target.value})}
+          />
+          <Button
+            variant='contained'
+            onClick={this.handleConfirmGuess}
+          >
+            {this.state.ready ? 'Guess Again' : 'Guess'}
+          </Button>
         </Paper>
       </div>
     );
