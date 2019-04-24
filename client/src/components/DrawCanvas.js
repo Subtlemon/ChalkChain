@@ -152,7 +152,6 @@ export default class DrawCanvas extends Component {
    ***************************************************************************/
 
   handleNewRadius = (radius) => {
-    console.log('new radius:', radius);
     this.setState({radius: radius});
   }
 

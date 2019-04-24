@@ -173,7 +173,7 @@ export default class RoomComponent extends Component {
           <div style={styles.settingsContainer}>
             <div style={styles.settingsRow}>
               <TextField
-                label='Round Theme'
+                label='Round Theme (unused)'
                 value={this.state.sharedState.theme}
                 onChange={(event) => this.setState({sharedState: {theme: event.target.value}})}
                 style={styles.textField}

@@ -29,7 +29,7 @@ export default class DrawComponent extends Component {
   }
 
   componentDidMount = () => {
-    this.setState({ready: false});
+    this.setState({ready: false, timeLeft: undefined});
     this.state.roomRef.child('chains')
       .child(this.state.chainUid)
       .limitToLast(1)
@@ -38,9 +38,28 @@ export default class DrawComponent extends Component {
           this.setState({word: snapshot.val().word});
         }
       });
+    this.state.roomRef.child('game_state/drawTime').once('value', (snapshot) => {
+      if (snapshot.val()) {
+        this.setState({timer: snapshot.val()});
+        setInterval(() => {
+          this.setState({timer: this.state.timer - 1});
+          if (this.state.timer <= 0) {
+            clearInterval(this.intervalId);
+            if (!this.state.ready) {
+              this.handleConfirmDrawing();
+              // eslint-disable-next-line
+              this.state.ready = true;
+            }
+          }
+        }, 1000);
+      }
+    });
   }
 
   componentWillUnmount = () => {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
     delete this.chainRef;
   }
 
@@ -114,12 +133,18 @@ export default class DrawComponent extends Component {
         </Paper>
         <Divider style={styles.divider} />
         <DrawCanvas ref='drawing'/>
-        <Button
-          variant='contained'
-          onClick={this.handleConfirmDrawing}
-        >
-          {this.state.ready ? 'Update Drawing' : 'Finished Drawing'}
-        </Button>
+        <Divider style={styles.divider} />
+        <Paper style={styles.paper}>
+          <Typography variant='h6'>
+            {this.state.timer ? this.state.timer + 's remaining' : ''}
+          </Typography>
+          <Button
+            variant='contained'
+            onClick={this.handleConfirmDrawing}
+          >
+            {this.state.ready ? 'Update Drawing' : 'Finished Drawing'}
+          </Button>
+        </Paper>
       </div>
     );
   }
