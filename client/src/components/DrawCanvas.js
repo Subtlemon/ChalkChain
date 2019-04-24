@@ -1,9 +1,40 @@
 import React, { Component } from 'react';
 
+import Divider from '@material-ui/core/Divider';
+import IconButton from '@material-ui/core/IconButton';
+import Paper from '@material-ui/core/Paper';
+import Tooltip from '@material-ui/core/Tooltip';
+
+import ClearIcon from '@material-ui/icons/Delete';
+
 const styles = {
   canvas: {
-    height: '100%',
-    width: '100%',
+    height: '500px',
+    width: '500px',
+  },
+  divider: {
+    margin: '10px',
+  },
+  toolbar: {
+    display: 'grid',
+    gridTemplateColumns: 'auto auto',
+    gridColumnGap: '10px',
+  },
+  colours: {
+    justifySelf: 'center',
+    display: 'grid',
+    gridColumnGap: '5px',
+    gridRowGap: '5px',
+    gridTemplateColumns: '40px 40px 40px 40px 40px',
+    gridTemplateRows: '40px 40px',
+  },
+  misc: {
+    justifySelf: 'center',
+    display: 'grid',
+    gridColumnGap: '5px',
+    gridRowGap: '5px',
+    gridTemplateColumns: '40px 40px',
+    gridTemplateRows: '40px 40px',
   },
 };
 
@@ -13,8 +44,8 @@ export default class DrawCanvas extends Component {
     super(props);
 
     this.state = {
-      fillStyle: 'black',
-      radius: 5,
+      colour: 'black',
+      radius: 3,
     };
   }
 
@@ -29,10 +60,12 @@ export default class DrawCanvas extends Component {
 
     this.ctx.fillStyle = 'white';
     this.clearscreen();
+    this.ctx.fillStyle = this.state.colour;
   }
 
   componentDidUpdate() {
-    this.ctx.fillStyle = this.state.fillStyle;
+    this.ctx.fillStyle = this.state.colour;
+    this.ctx.strokeStyle = this.state.colour;
     this.ctx.lineWidth = this.state.radius * 2;
   }
 
@@ -88,20 +121,24 @@ export default class DrawCanvas extends Component {
     this.ctx.closePath();
   }
 
-  /**
-   * Draws a line of thickness defined by state between two coordinates.
-   */
-  drawLine = (x1, y1, x2, y2) => {
-    this.ctx.beginPath();
-    this.ctx.moveTo(x1, y1);
-    this.ctx.lineTo(x2, y2);
-    this.ctx.stroke();
-    this.ctx.closePath();
-  }
-
   clearscreen = () => {
     this.ctx.fillRect(0, 0, this.refs.canvas.width, this.refs.canvas.height);
   }
+
+  /***************************************************************************
+   * Button Event Handlers                                                   *
+   ***************************************************************************/
+
+  handleNewRadius = (radius) => {
+    console.log('new radius:', radius);
+    this.setState({radius: radius});
+  }
+
+  handleColour = (event) => {
+    this.setState({
+      colour: event.target.style.backgroundColor
+    });
+  };
 
   /***************************************************************************
    * Render                                                                  *
@@ -110,13 +147,52 @@ export default class DrawCanvas extends Component {
   render() {
     return (
       <div>
-        <canvas
-          ref='canvas'
-          onMouseDown={this.handleMouseDown}
-          onMouseUp={this.handleMouseUp}
-          onMouseMove={this.handleMouseMove}
-          style={styles.canvas}
-        />
+        <Paper>
+          <canvas
+            ref='canvas'
+            onMouseDown={this.handleMouseDown}
+            onMouseUp={this.handleMouseUp}
+            onMouseMove={this.handleMouseMove}
+            style={styles.canvas}
+          />
+        </Paper>
+        <Divider style={styles.divider} />
+        <div style={styles.toolbar}>
+          <div style={styles.colours}>
+            <Paper onClick={this.handleColour} style={{backgroundColor: 'black'}}/>
+            <Paper onClick={this.handleColour} style={{backgroundColor: 'red'}}/>
+            <Paper onClick={this.handleColour} style={{backgroundColor: 'blue'}}/>
+            <Paper onClick={this.handleColour} style={{backgroundColor: 'green'}}/>
+            <Paper onClick={this.handleColour} style={{backgroundColor: 'yellow'}}/>
+            <Paper onClick={this.handleColour} style={{backgroundColor: 'white'}}/>
+            <Paper onClick={this.handleColour} style={{backgroundColor: 'aqua'}}/>
+            <Paper onClick={this.handleColour} style={{backgroundColor: 'fuchsia'}}/>
+            <Paper onClick={this.handleColour} style={{backgroundColor: 'brown'}}/>
+            <Paper onClick={this.handleColour} style={{backgroundColor: 'lime'}}/>
+          </div>
+          <div style={styles.misc}>
+            <Tooltip title='Small Brush' placement='top'>
+              <Paper onClick={this.handleNewRadius.bind(this, 1)}>
+                <svg><circle cx='20' cy='20' r='5' fill='black' /></svg>
+              </Paper>
+            </Tooltip>
+            <Tooltip title='Medium Brush' placement='top'>
+              <Paper onClick={this.handleNewRadius.bind(this, 3)}>
+                <svg><circle cx='20' cy='20' r='10' fill='black' /></svg>
+              </Paper>
+            </Tooltip>
+            <Tooltip title='Large Brush' placement='bottom'>
+              <Paper onClick={this.handleNewRadius.bind(this, 5)}>
+                <svg><circle cx='20' cy='20' r='15' fill='black' /></svg>
+              </Paper>
+            </Tooltip>
+            <Tooltip title='Fill Screen' placement='bottom'>
+              <IconButton onClick={this.clearscreen}>
+                <ClearIcon />
+              </IconButton>
+            </Tooltip>
+          </div>
+        </div>
       </div>
     );
   }
