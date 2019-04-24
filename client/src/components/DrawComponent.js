@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 
 import Button from '@material-ui/core/Button';
+import Divider from '@material-ui/core/Divider';
+import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 
@@ -10,6 +12,12 @@ const styles = {
   layout: {
 
   },
+  paper: {
+    padding: '20px',
+  },
+  divider: {
+    margin: '10px',
+  }
 };
 
 export default class DrawComponent extends Component {
@@ -91,24 +99,21 @@ export default class DrawComponent extends Component {
    * Render                                                                  *
    ***************************************************************************/
 
-  // TODO: This is ugly AF.
   render() {
     return (
       <div style={styles.layout}>
-        <Typography>
-          You are drawing <b>{this.state.nextNick}</b>'s word: <b>{this.state.word}</b>.
-        </Typography>
+        <Paper style={styles.paper}>
+          <Typography variant='h5'>
+            You are drawing <b>{this.state.nextNick}</b>'s word: <b>{this.state.word}</b>.
+          </Typography>
+        </Paper>
+        <Divider style={styles.divider} />
         <DrawCanvas ref='canvas' style={{height: '500px'}}/>
-        <TextField
-          label='debug only'
-          value={this.state.debug_image}
-          onChange={(event) => this.setState({debug_image: event.target.value})}
-        />
         <Button
           variant='contained'
           onClick={this.handleConfirmDrawing}
         >
-          Finished Drawing
+          {this.state.ready ? 'Update Drawing' : 'Finished Drawing'}
         </Button>
       </div>
     );
