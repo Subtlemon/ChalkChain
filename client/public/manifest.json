@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "ChalkChain",
+  "name": "A vanilla telephone pictionary game.",
   "icons": [
     {
       "src": "favicon.ico",

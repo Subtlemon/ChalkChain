@@ -41,7 +41,7 @@ export default class Entry extends Component {
     }
 
     if (this.props.onCreateRoom) {
-      this.props.onCreateRoom(this.state.roomName, this.state.nickName);
+      this.props.onCreateRoom(this.state.roomName.toUpperCase(), this.state.nickName);
     } else {
       console.log("Component was not given a create room handler.");
     }
@@ -58,7 +58,7 @@ export default class Entry extends Component {
     }
 
     if (this.props.onJoinRoom) {
-      this.props.onJoinRoom(this.state.roomName, this.state.nickName);
+      this.props.onJoinRoom(this.state.roomName.toUpperCase(), this.state.nickName);
     } else {
       console.log("Component was not given a join room handler.");
     }

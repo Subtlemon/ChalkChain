@@ -25,6 +25,16 @@ def index():
     return render_template('index.html')
 
 
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(TEMPLATE_PATH, 'favicon.ico')
+
+
+@app.route('/manifest.json')
+def manifest():
+    return send_from_directory(TEMPLATE_PATH, 'manifest.json')
+
+
 # Route game start request.
 @app.route('/start', methods=['POST'])
 def startGame():
@@ -59,19 +69,6 @@ def progressGame():
     else:
         print('Error: %s', error)
         return error, 400
-
-
-@app.route('/test')
-def test():
-    print("Test")
-    result = firebase.put('/test', 'name', 'hello world')
-    print(result)
-    return "<html><head></head><body><h1>hello world!</h1></body></html>"
-
-
-@app.route('/<path:path>')
-def catch_all(path):
-    abort(404)
 
 
 if __name__ == '__main__':
