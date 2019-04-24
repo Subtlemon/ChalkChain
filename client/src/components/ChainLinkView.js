@@ -31,11 +31,12 @@ export default class ChainLinkView extends Component {
         </Typography>
       );
     } else {
-      return (
+      return [
         <Typography>
-          {this.state.data.nickName} drew this: {this.state.data.image}
-        </Typography>
-      );
+          <b>{this.state.data.nickName}</b> drew this:
+        </Typography>,
+        <img src={this.state.data.image} alt='Broken Image, Sorry!'/>
+      ];
     }
   }
 

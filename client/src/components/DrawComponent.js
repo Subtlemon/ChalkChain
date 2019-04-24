@@ -3,10 +3,7 @@ import React, { Component } from 'react';
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import Paper from '@material-ui/core/Paper';
-import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-
-import { sizing } from '@material-ui/system';
 
 import DrawCanvas from './DrawCanvas';
 
@@ -55,19 +52,14 @@ export default class DrawComponent extends Component {
    ***************************************************************************/
 
   handleConfirmDrawing = (event) => {
-    if (!this.state.debug_image) {
-      window.alert("You didn't draw anything");
-      return;
-    }
-
     if (this.chainRef) {
-      this.chainRef.update({image: this.state.debug_image});
+      this.chainRef.update({image: this.refs.drawing.refs.canvas.toDataURL()});
     } else {
       this.chainRef = this.state.roomRef.child('chains').child(this.state.chainUid).push();
       this.chainRef.set({
         uid: this.state.uid,
         nickName: this.state.nickName,
-        image: this.state.debug_image,
+        image: this.refs.drawing.refs.canvas.toDataURL(),
       });
     }
     if (!this.state.ready) {
@@ -113,7 +105,7 @@ export default class DrawComponent extends Component {
           </Typography>
         </Paper>
         <Divider style={styles.divider} />
-        <DrawCanvas ref='canvas' style={{height: '500px'}}/>
+        <DrawCanvas ref='drawing' style={{height: '500px'}}/>
         <Button
           variant='contained'
           onClick={this.handleConfirmDrawing}

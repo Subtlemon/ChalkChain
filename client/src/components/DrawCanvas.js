@@ -186,7 +186,7 @@ export default class DrawCanvas extends Component {
               </Paper>
             </Tooltip>
             <Tooltip title='Large Brush' placement='bottom'>
-              <Paper onClick={this.handleNewRadius.bind(this, 5)}>
+              <Paper onClick={this.handleNewRadius.bind(this, 15)}>
                 <svg><circle cx='20' cy='20' r='15' fill='black' /></svg>
               </Paper>
             </Tooltip>
