@@ -6,6 +6,8 @@ import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 
+import { sizing } from '@material-ui/system';
+
 import DrawCanvas from './DrawCanvas';
 
 const styles = {
@@ -103,8 +105,11 @@ export default class DrawComponent extends Component {
     return (
       <div style={styles.layout}>
         <Paper style={styles.paper}>
+          <Typography variant='h6'>
+            You are drawing <b>{this.state.nextNick}</b>'s word:
+          </Typography>
           <Typography variant='h5'>
-            You are drawing <b>{this.state.nextNick}</b>'s word: <b>{this.state.word}</b>.
+            <b>{this.state.word}</b>
           </Typography>
         </Paper>
         <Divider style={styles.divider} />

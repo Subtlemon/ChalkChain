@@ -9,6 +9,10 @@ import ClearIcon from '@material-ui/icons/Delete';
 
 const styles = {
   canvas: {
+    height: '100%',
+    width: '100%',
+  },
+  canvasContainer: {
     height: '500px',
     width: '500px',
   },
@@ -147,7 +151,7 @@ export default class DrawCanvas extends Component {
   render() {
     return (
       <div>
-        <Paper>
+        <Paper style={styles.canvasContainer}>
           <canvas
             ref='canvas'
             onMouseDown={this.handleMouseDown}
