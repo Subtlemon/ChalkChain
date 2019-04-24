@@ -1,6 +1,6 @@
 # ChalkChain
 
-Try it at chalkchain.appspot.com.
+Try it at http://chalkchain.appspot.com.
 
 ## The Game
 
@@ -17,3 +17,7 @@ It's just telephone pictionary.
 ## The Name
 
 If you make the project sound like "BlockChain", people will instantly throw money at it, right?
+
+## License
+
+You can do pretty much whatever you want with this code, but you probably shouldn't.
