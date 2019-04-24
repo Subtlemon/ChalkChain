@@ -35,7 +35,6 @@ export default class DrawComponent extends Component {
       .limitToLast(1)
       .once('child_added', (snapshot) => {
         if (snapshot.val()) {
-          console.log(snapshot.val());
           this.setState({word: snapshot.val().word});
         }
       });
@@ -114,7 +113,7 @@ export default class DrawComponent extends Component {
           </Typography>
         </Paper>
         <Divider style={styles.divider} />
-        <DrawCanvas ref='drawing' style={{height: '500px'}}/>
+        <DrawCanvas ref='drawing'/>
         <Button
           variant='contained'
           onClick={this.handleConfirmDrawing}

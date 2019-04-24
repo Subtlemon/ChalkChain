@@ -14,7 +14,7 @@ const styles = {
   },
   canvasContainer: {
     height: '500px',
-    width: '500px',
+    width: '400px',
   },
   divider: {
     margin: '10px',
@@ -106,6 +106,24 @@ export default class DrawCanvas extends Component {
     }
   }
 
+  handleTouchStart = (event) => {
+    if (event.touches.length) {
+      this.handleMouseDown(event.touches[0]);
+    }
+  }
+
+  handleTouchEnd = (event) => {
+    if (event.touches.length) {
+      this.handleMouseUp(event.touches[0]);
+    }
+  }
+
+  handleTouchMove = (event) => {
+    if (event.touches.length) {
+      this.handleMouseMove(event.touches[0]);
+    }
+  }
+
   /***************************************************************************
    * Canvas Helpers                                                          *
    ***************************************************************************/
@@ -157,6 +175,9 @@ export default class DrawCanvas extends Component {
             onMouseDown={this.handleMouseDown}
             onMouseUp={this.handleMouseUp}
             onMouseMove={this.handleMouseMove}
+            onTouchStart={this.handleTouchStart}
+            onTouchEnd={this.handleTouchEnd}
+            onTouchMove={this.handleTouchMove}
             style={styles.canvas}
           />
         </Paper>
