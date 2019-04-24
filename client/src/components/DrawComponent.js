@@ -30,6 +30,15 @@ export default class DrawComponent extends Component {
 
   componentDidMount = () => {
     this.setState({ready: false});
+    this.state.roomRef.child('chains')
+      .child(this.state.chainUid)
+      .limitToLast(1)
+      .once('child_added', (snapshot) => {
+        if (snapshot.val()) {
+          console.log(snapshot.val());
+          this.setState({word: snapshot.val().word});
+        }
+      });
   }
 
   componentWillUnmount = () => {
