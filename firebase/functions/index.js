@@ -15,6 +15,7 @@ exports.cleanRoom = functions.database.ref('/rooms/{roomName}/users')
       return snapshot.ref.parent.remove();
     });
 
+// TODO: Delete this once flask is no longer deployed.
 // When all users have left a game, delete all associated data.
 exports.finishGame = functions.database.ref('/rooms/{roomName}/in_game')
     .onDelete((snapshot, context) => {
@@ -26,4 +27,10 @@ exports.finishGame = functions.database.ref('/rooms/{roomName}/in_game')
         snapshot.ref.parent.child('game_state').remove(),
         snapshot.ref.parent.child('spectate_state').remove(),
       ]);
+    });
+
+// When all users have left a game, delete all associated data.
+exports.cleanGame = functions.database.ref('/rooms/{roomName}/game/activePlayers')
+    .onDelete((snapshot, context) => {
+      return snapshot.ref.parent.remove();
     });
