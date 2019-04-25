@@ -111,7 +111,7 @@ class App extends Component {
         onError(error);
       } else if (!committed) {
         if (onRoomExist) {
-          onRoomExist(nickName);
+          onRoomExist(nickName, onSuccess, onError);
         }
       } else {
         let presenseRef = firebase.database().ref(roomUrl + '/users').push();
@@ -119,7 +119,7 @@ class App extends Component {
         // Note: This assumes set cannot fail.
         presenseRef.set({
           nickName: nickName
-        }).then(() => onSuccess(roomName, presenseRef.key, nickName));
+        }).then(() => onSuccess(roomName, presenseRef.key));
       }
     });
   }
@@ -127,7 +127,7 @@ class App extends Component {
   /**
    * Attempts to join a room with roomName.
    *
-   * On success, calls onSuccess with room name, user ID, and nickname.
+   * On success, calls onSuccess with room name and user ID.
    *    Also sets a presense node under /rooms/<roomName>/users/<userID>
    * On no room, calls onNoRoom.
    * This function cannot actually call onError.
@@ -141,7 +141,7 @@ class App extends Component {
         // Note: This assumes set cannot fail.
         presenseRef.set({
           nickName: nickName
-        }).then(() => onSuccess(roomName, presenseRef.key, nickName));
+        }).then(() => onSuccess(roomName, presenseRef.key));
       } else {
         onNoRoom();
       }
@@ -155,7 +155,7 @@ class App extends Component {
    *
    * Note: This function can fail, but has no error handling.
    */
-  onJoinedRoom = (roomName, userID, nickName) => {
+  onJoinedRoom = (roomName, userID) => {
     let gameRef = firebase.database().ref('/rooms/' + roomName + '/game');
     this.setState({
       mainView: 'ROOM_VIEW',
@@ -163,7 +163,6 @@ class App extends Component {
       },
       roomName: roomName,
       userID: userID,
-      nickName: nickName,
     });
     gameRef.on('value', (snapshot) => {
       const value = snapshot.val();
@@ -203,7 +202,6 @@ class App extends Component {
           viewProps={this.state.viewProps}
           roomName={this.state.roomName}
           userID={this.state.userID}
-          nickName={this.state.nickName}
           roomRef={firebase.database().ref('/rooms/' + this.state.roomName)}
         />
       );
@@ -212,7 +210,6 @@ class App extends Component {
         <GameComponent
           viewProps={this.state.viewProps}
           userID={this.state.userID}
-          nickName={this.state.nickName}
         />
       );
     } else { // Default to ENTRY_VIEW.
