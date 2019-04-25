@@ -166,8 +166,8 @@ class App extends Component {
     });
     gameRef.on('value', (snapshot) => {
       const value = snapshot.val();
-      if (value && value.settings && value.settings.order) {
-        if (value.settings.order[userID]) {
+      if (value && value.settings && value.settings.players) {
+        if (value.settings.players[userID]) {
           this.setState({
             mainView: 'GAME_VIEW',
             viewProps: {
@@ -192,10 +192,7 @@ class App extends Component {
   }
 
   handleLeaveGame = () => {
-    this.setState({
-      mainView: 'ROOM_VIEW',
-      viewProps: {},
-    });
+    this.onJoinedRoom(this.state.roomName, this.state.userID);
   }
 
   /***************************************************************************

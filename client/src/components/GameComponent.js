@@ -43,6 +43,9 @@ export default class GameComponent extends Component {
       this.presenseRef.onDisconnect().cancel();
       delete this.presenseRef;
     });
+
+    // Also remove self from players list, to avoid being sucked back into the game.
+    this.state.gameRef.child('settings').child('players').child(this.state.userID).remove();
   }
 
   static getDerivedStateFromProps(props, state) {
