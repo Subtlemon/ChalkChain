@@ -5,10 +5,7 @@ import 'firebase/database';
 import './App.css';
 import Entry from './components/Entry';
 import RoomComponent from './components/RoomComponent';
-import StartComponent from './components/StartComponent';
-import DrawComponent from './components/DrawComponent';
-import GuessComponent from './components/GuessComponent';
-import SpectateComponent from './components/SpectateComponent';
+import GameComponent from './components/GameComponent';
 
 class App extends Component {
   constructor(props) {
@@ -26,8 +23,7 @@ class App extends Component {
     firebase.initializeApp(config);
 
     this.state = {
-      mainComponent: 'ENTRY_VIEW',
-      mainComponentProps: undefined
+      mainView: 'ENTRY_VIEW',
     };
   }
 
@@ -171,8 +167,6 @@ class App extends Component {
     });
     gameRef.on('value', (snapshot) => {
       const value = snapshot.val();
-      console.log("onJoinedRoom's gameRef tripped.");
-      console.log(value);
       if (value && value.settings && value.settings.order) {
         if (value.settings.order[userID]) {
           this.setState({
@@ -214,8 +208,13 @@ class App extends Component {
         />
       );
     } else if (this.state.mainView === 'GAME_VIEW') {
-      console.log('Switched to GAME_VIEW with settings:', this.state.settings);
-      return (<div><p>DEBUG</p></div>);
+      return (
+        <GameComponent
+          viewProps={this.state.viewProps}
+          userID={this.state.userID}
+          nickName={this.state.nickName}
+        />
+      );
     } else { // Default to ENTRY_VIEW.
       return (
         <Entry

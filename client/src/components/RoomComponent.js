@@ -101,7 +101,6 @@ export default class RoomComponent extends Component {
   }
 
   handleStartButton = (event) => {
-    console.log('this.state.users: ', this.state.users);
     if (!this.state.users) {
       window.alert('Internal Error: No users found.');
       return;
@@ -125,7 +124,6 @@ export default class RoomComponent extends Component {
       order[userIDs[i-1]].next = userIDs[i];
     }
     order[userIDs[usersLength - 1]].next = userIDs[0];
-    console.log('order:', order);
 
     return this.state.roomRef.child('game').transaction((currentData) => {
       if (currentData === null) {
