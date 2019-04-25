@@ -47,8 +47,8 @@ export default class DrawComponent extends Component {
   }
 
   componentWillUnmount = () => {
-    if (this.intervalId) {
-      clearInterval(this.intervalId);
+    if (this.intervalID) {
+      clearInterval(this.intervalID);
     }
     delete this.chainRef;
   }

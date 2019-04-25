@@ -68,7 +68,6 @@ export default class GameComponent extends Component {
       this.setState({
         mainView: 'GAME_PHASE_VIEW',
         chainID: nextChain,
-        nextChain: nextChain,
       });
     }
   }

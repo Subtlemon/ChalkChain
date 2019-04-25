@@ -10,6 +10,9 @@ const styles = {
   layout: {
 
   },
+  paper: {
+    padding: '20px',
+  },
 };
 
 export default class GamePhaseComponent extends Component {
@@ -21,13 +24,14 @@ export default class GamePhaseComponent extends Component {
     };
   }
 
+  componentDidUpdate = (prevProps) => {
+    if (prevProps.chainID != this.props.chainID) {
+      this.updateChainLinkData();
+    }
+  }
+
   componentDidMount = () => {
-    this.state.gameRef.child('chains').child(this.state.chainID)
-      .limitToLast(1).once('child_added', (snapshot) => {
-        if (snapshot.val()) {
-          this.setState({chainLinkData: snapshot.val()});
-        }
-      });
+    this.updateChainLinkData();
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -38,6 +42,15 @@ export default class GamePhaseComponent extends Component {
       chainID: props.chainID,
       userID: props.userID,
     };
+  }
+
+  updateChainLinkData = () => {
+    this.state.gameRef.child('chains').child(this.state.chainID)
+      .limitToLast(1).once('child_added', (snapshot) => {
+        if (snapshot.val()) {
+          this.setState({chainLinkData: snapshot.val()});
+        }
+      });
   }
 
   /***************************************************************************

@@ -42,6 +42,7 @@ export default class GuessComponent extends Component {
     return {
       gameRef: props.gameRef,
       progressRef: props.progressRef,
+      players: props.players,
       chainID: props.chainID,
       userID: props.userID,
       data: props.data,
