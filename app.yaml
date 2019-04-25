@@ -2,15 +2,16 @@ runtime: python27
 api_version: 1
 threadsafe: true
 
-libraries:
-- name: ssl
-  version: latest
-
 handlers:
-- url: /static
-  static_dir: client/build/static
-- url: /.*
-  script: server.main.app
+- url: /static/(.*)
+  static_files: client/build/static/\1
+  upload: client/build/static/(.*)
+- url: /
+  static_files: client/build/index.html
+  upload: client/build/index.html
+- url: /(.*)
+  static_files: client/build/\1
+  upload: client/build/(.*)
 
 skip_files:
 - client/node_modules
