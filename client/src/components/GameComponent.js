@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 
-import StartComponent from './StartComponent';
+import GamePhaseComponent from './GamePhaseComponent';
 import SpectateComponent from './SpectateComponent';
+import StartComponent from './StartComponent';
 
 const styles = {
   layout: {
@@ -32,7 +33,7 @@ export default class GameComponent extends Component {
       }
     });
 
-    this.setState({mainView: 'START_VIEW'});
+    this.setState({mainView: 'START_VIEW', chainID: this.state.userID});
   }
 
   componentWillUnmount = () => {
@@ -48,7 +49,6 @@ export default class GameComponent extends Component {
     return {
       gameRef: props.viewProps.gameRef,
       settings: props.viewProps.settings,
-      chainID: props.userID,
       userID: props.userID,
     };
   }
@@ -68,6 +68,7 @@ export default class GameComponent extends Component {
       this.setState({
         mainView: 'GAME_PHASE_VIEW',
         chainID: nextChain,
+        nextChain: nextChain,
       });
     }
   }
@@ -78,16 +79,21 @@ export default class GameComponent extends Component {
 
   getMainComponent = () => {
     if (this.state.mainView === 'GAME_PHASE_VIEW') {
-      console.log('Moving to game phase view');
       return (
-        <div><p>DEBUG</p></div>
+        <GamePhaseComponent
+          gameRef={this.state.gameRef}
+          progressRef={this.state.gameRef.child('notReady')}
+          settings={this.state.settings}
+          chainID={this.state.chainID}
+          userID={this.state.userID}
+        />
       );
     } else if (this.state.mainView === 'SPECTATE_VIEW') {
       return (
         <SpectateComponent
-          chainID={this.state.userID}
           gameRef={this.state.gameRef}
           players={this.state.settings.players}
+          chainID={this.state.userID}
         />
       );
     } else { // Default to START_VIEW.
@@ -95,8 +101,8 @@ export default class GameComponent extends Component {
         <StartComponent
           gameRef={this.state.gameRef}
           progressRef={this.state.gameRef.child('notReady')}
-          chainID={this.state.chainID}
-          prevID={this.state.settings.order[this.state.chainID].prev}
+          chainID={this.state.userID}
+          prevID={this.state.settings.order[this.state.userID].prev}
           players={this.state.settings.players}
         />
       );
@@ -105,7 +111,7 @@ export default class GameComponent extends Component {
 
   render() {
     return (
-      <div>
+      <div style={styles.layout}>
         {this.getMainComponent()}
       </div>
     );

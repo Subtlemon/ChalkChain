@@ -28,15 +28,10 @@ export default class GuessComponent extends Component {
   }
 
   componentDidMount = () => {
+    this.progressPresenseRef = this.state.progressRef.child(this.state.chainID);
+    this.progressPresenseRef.onDisconnect().remove();
+    this.progressPresenseRef.set(false);
     this.setState({ready: false});
-    this.state.roomRef.child('chains')
-      .child(this.state.chainUid)
-      .limitToLast(1)
-      .once('child_added', (snapshot) => {
-        if (snapshot.val()) {
-          this.refs.img.src = snapshot.val().image;
-        }
-      });
   }
 
   componentWillUnount = () => {
@@ -45,12 +40,11 @@ export default class GuessComponent extends Component {
 
   static getDerivedStateFromProps(props, state) {
     return {
-      roomRef: props.roomRef,
-      roomName: props.roomName,
-      uid: props.uid,
-      nickName: props.nickName,
-      chainUid: props.viewProps.chainUid,
-      nextNick: props.viewProps.nextNick,
+      gameRef: props.gameRef,
+      progressRef: props.progressRef,
+      chainID: props.chainID,
+      userID: props.userID,
+      data: props.data,
     };
   }
 
@@ -68,37 +62,19 @@ export default class GuessComponent extends Component {
       this.chainRef.update({word: this.state.guess});
     } else {
       // Push a new link in the chain and update server.
-      this.chainRef = this.state.roomRef.child('chains').child(this.state.chainUid).push();
+      this.chainRef = this.state.gameRef.child('chains').child(this.state.chainID).push();
       this.chainRef.set({
-        uid: this.state.uid,
-        nickName: this.state.nickName,
         word: this.state.guess,
+        userID: this.state.userID,
       });
     }
 
     if (!this.state.ready) {
-      const request = {
-        roomName: this.state.roomName,
-        uid: this.state.uid,
-        word: this.state.guess,
-      };
-      fetch('advance', {
-        method: 'post',
-        headers: {
-          'Content-type': 'application/json'
-        },
-        body: JSON.stringify(request)
-      }).then(this.statusHandler)
-      .then(() => this.setState({ready: true}))
-      .catch((error) => window.alert('Request failed: ' + error));
-    }
-  }
-
-  statusHandler = (response) => {
-    if (response.status >= 200 && response.status < 300) {
-      return Promise.resolve(response);
-    } else {
-      return Promise.reject(new Error(response.statusText));
+      this.progressPresenseRef.remove().then(() => {
+        this.progressPresenseRef.onDisconnect().cancel();
+        delete this.progressPresenseRef;
+      });
+      this.setState({ready: true});
     }
   }
 
@@ -111,12 +87,12 @@ export default class GuessComponent extends Component {
       <div style={styles.layout}>
         <Paper style={styles.paper}>
           <Typography variant='h6'>
-            You are guessing <b>{this.state.nextNick}</b>'s image:
+            You are guessing <b>{this.state.players[this.state.data.userID].nickName}</b>'s image:
           </Typography>
         </Paper>
         <Divider style={styles.divider}/>
         <Paper>
-          <img ref='img' alt='TODO, load image from chain' src='' />
+          <img ref='img' alt='guess' src={this.state.data.image} />
         </Paper>
         <Divider style={styles.divider} />
         <Paper style={styles.paper}>
