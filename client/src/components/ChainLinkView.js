@@ -15,7 +15,8 @@ export default class ChainLinkView extends Component {
 
   static getDerivedStateFromProps(props, state) {
     return {
-      data: props.data
+      data: props.data,
+      players: props.players,
     };
   }
 
@@ -27,13 +28,14 @@ export default class ChainLinkView extends Component {
     if (this.state.data.word) {
       return (
         <Typography variant='subtitle1'>
-          <b>{this.state.data.nickName}</b> guessed: <b>{this.state.data.word}</b>
+          <b>{this.state.players[this.state.data.userID].nickName}</b> 
+          guessed: <b>{this.state.data.word}</b>
         </Typography>
       );
     } else {
       return [
         <Typography variant='subtitle1'>
-          <b>{this.state.data.nickName}</b> drew this:
+          <b>{this.state.players[this.state.data.userID].nickName}</b> drew this:
         </Typography>,
         <img src={this.state.data.image} alt='Broken Image, Sorry!'/>
       ];

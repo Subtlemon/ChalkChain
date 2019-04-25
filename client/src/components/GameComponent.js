@@ -93,6 +93,7 @@ export default class GameComponent extends Component {
           gameRef={this.state.gameRef}
           players={this.state.settings.players}
           userID={this.state.userID}
+          onLeave={this.props.onLeave}
         />
       );
     } else { // Default to START_VIEW.

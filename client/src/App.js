@@ -191,6 +191,13 @@ class App extends Component {
     }).join('').toUpperCase();
   }
 
+  handleLeaveGame = () => {
+    this.setState({
+      mainView: 'ROOM_VIEW',
+      viewProps: {},
+    });
+  }
+
   /***************************************************************************
    * Render                                                                  *
    ***************************************************************************/
@@ -210,6 +217,7 @@ class App extends Component {
         <GameComponent
           viewProps={this.state.viewProps}
           userID={this.state.userID}
+          onLeave={this.handleLeaveGame}
         />
       );
     } else { // Default to ENTRY_VIEW.
