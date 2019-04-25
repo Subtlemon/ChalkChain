@@ -24,6 +24,7 @@ export default class GuessComponent extends Component {
 
     this.state = {
       ready: false,
+      guess: '',
     };
   }
 

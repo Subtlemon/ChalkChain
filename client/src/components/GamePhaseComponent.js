@@ -25,7 +25,7 @@ export default class GamePhaseComponent extends Component {
   }
 
   componentDidUpdate = (prevProps) => {
-    if (prevProps.chainID != this.props.chainID) {
+    if (prevProps.chainID !== this.props.chainID) {
       this.updateChainLinkData();
     }
   }

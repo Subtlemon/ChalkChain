@@ -92,7 +92,7 @@ export default class GameComponent extends Component {
         <SpectateComponent
           gameRef={this.state.gameRef}
           players={this.state.settings.players}
-          chainID={this.state.userID}
+          userID={this.state.userID}
         />
       );
     } else { // Default to START_VIEW.
