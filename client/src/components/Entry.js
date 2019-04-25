@@ -25,7 +25,8 @@ export default class Entry extends Component {
     super(props);
 
     this.state = {
-      roomName: ''
+      roomName: '',
+      nickName: '',
     };
   }
 

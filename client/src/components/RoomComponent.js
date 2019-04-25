@@ -71,7 +71,6 @@ export default class RoomComponent extends Component {
     this.sharedRef = this.state.roomRef.child('waitingState');
     this.sharedRef.on('value', (snapshot) => {
       if (snapshot.val()) {
-        console.log('sharedState:', snapshot.val());
         this.setState({
           sharedState: snapshot.val()
         });
@@ -152,20 +151,20 @@ export default class RoomComponent extends Component {
    ***************************************************************************/
 
   getUserListItems = () => {
-    if (this.state.users && this.state.users.length) {
-      return Object.values(this.state.users).map((user) => {
+    if (this.state.users && Object.keys(this.state.users).length) {
+      return Object.keys(this.state.users).map((key, index) => {
         return (
-          <ListItem>
+          <ListItem key={key}>
             <ListItemIcon>
               <UserActive />
             </ListItemIcon>
             <ListItemText
-              primary={user.nickName}
+              primary={this.state.users[key].nickName}
               primaryTypographyProps={{variant: 'h6'}}
             />
           </ListItem>
         );
-      }).reduce((prev, curr) => [prev, <Divider />, curr]);
+      }).reduce((prev, curr) => [prev, <Divider key={prev+'div'} />, curr]);
     } else {
       return (
         <ListItem>
@@ -191,7 +190,7 @@ export default class RoomComponent extends Component {
             <div style={styles.settingsRow}>
               <TextField
                 label='Round Theme (unused)'
-                value={this.state.sharedState.theme}
+                value={this.state.sharedState.theme || ''}
                 onChange={(event) => this.setState({sharedState: {theme: event.target.value}})}
                 style={styles.textField}
               />
