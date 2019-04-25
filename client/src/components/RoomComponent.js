@@ -128,7 +128,10 @@ export default class RoomComponent extends Component {
     return this.state.roomRef.child('game').transaction((currentData) => {
       if (currentData === null) {
         return {
-          settings: Object.assign(this.state.sharedState, {order: order}),
+          settings: Object.assign(this.state.sharedState, {
+            order: order,
+            players: this.state.users,
+          }),
         };
       } else {
         return; // Abort the transaction.

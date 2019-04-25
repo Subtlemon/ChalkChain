@@ -20,9 +20,9 @@ export default class GameComponent extends Component {
 
   componentDidMount = () => {
     // Establish presense in game.
-    this.presenseRef = this.state.gameRef.child('players').child(this.state.userID);
+    this.presenseRef = this.state.gameRef.child('activePlayers').child(this.state.userID);
     this.presenseRef.onDisconnect().remove();
-    this.presenseRef.set(this.state.nickName);
+    this.presenseRef.set(this.state.userID);
 
     // Set listener to progress through game if everybody is ready.
     this.progressRef = this.state.gameRef.child('notReady');
@@ -50,7 +50,6 @@ export default class GameComponent extends Component {
       settings: props.viewProps.settings,
       chainID: props.userID,
       userID: props.userID,
-      nickName: props.nickName,
     };
   }
 
@@ -86,8 +85,9 @@ export default class GameComponent extends Component {
     } else if (this.state.mainView === 'SPECTATE_VIEW') {
       return (
         <SpectateComponent
-          userID={this.state.userID}
+          chainID={this.state.userID}
           gameRef={this.state.gameRef}
+          players={this.state.settings.players}
         />
       );
     } else { // Default to START_VIEW.
@@ -96,8 +96,8 @@ export default class GameComponent extends Component {
           gameRef={this.state.gameRef}
           progressRef={this.state.gameRef.child('notReady')}
           chainID={this.state.chainID}
-          nickName={this.state.nickName}
-          prevNick={this.state.settings.order[this.state.chainID].prev}
+          prevID={this.state.settings.order[this.state.chainID].prev}
+          players={this.state.settings.players}
         />
       );
     }

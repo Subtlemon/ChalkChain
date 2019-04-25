@@ -40,8 +40,8 @@ export default class StartComponent extends Component {
       gameRef: props.gameRef,
       progressRef: props.progressRef,
       chainID: props.chainID,
-      nickName: props.nickName,
-      prevNick: props.prevNick,
+      prevNick: props.players[props.prevID].nickName,
+      users: props.players,
     };
   }
 
@@ -61,7 +61,7 @@ export default class StartComponent extends Component {
       this.chainRef = this.state.gameRef.child('chains').child(this.state.chainID).push();
       this.chainRef.set({
         word: this.state.word,
-        nickName: this.state.nickName,
+        userID: this.state.chainID,
       });
     }
 
