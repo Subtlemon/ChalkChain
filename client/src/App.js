@@ -67,15 +67,6 @@ class App extends Component {
     );
   }
 
-  // Currently unused.
-  statusHandler = (response) => {
-    if (response.status >= 200 && response.status < 300) {
-      return Promise.resolve(response);
-    } else {
-      return Promise.reject(new Error(response.statusText));
-    }
-  }
-
   /***************************************************************************
    * Entry Request Helpers                                                   *
    ***************************************************************************/
@@ -84,6 +75,7 @@ class App extends Component {
    * Recursively attempts to create a room with a random name.
    *
    * On success, calls onSuccess with room name, user ID, and nickname.
+   *    Also sets a presense node under /rooms/<roomName>/users/<userID>
    * On error, returns error message.
    */
   createRandomRoom = (nickName, onSuccess, onError) => {
@@ -100,6 +92,7 @@ class App extends Component {
    * Attempts to create a room with roomName.
    * 
    * On success, calls onSuccess with room name, user ID, and nickname.
+   *    Also sets a presense node under /rooms/<roomName>/users/<userID>
    * On error, returns error message.
    * On room exists, calls onRoomExist with nickname, onSuccess, and onError.
    */
@@ -139,6 +132,7 @@ class App extends Component {
    * Attempts to join a room with roomName.
    *
    * On success, calls onSuccess with room name, user ID, and nickname.
+   *    Also sets a presense node under /rooms/<roomName>/users/<userID>
    * On no room, calls onNoRoom.
    * This function cannot actually call onError.
    */
@@ -158,19 +152,39 @@ class App extends Component {
     });
   }
 
+  /**
+   * Moves self to waiting room, and sets a watch for game start.
+   *    Watches /rooms/<roomName>/game, and moves to GAME_VIEW if userID is
+   *    found under game/settings/order (AKA user is supposed to be in game).
+   *
+   * Note: This function can fail, but has no error handling.
+   */
   onJoinedRoom = (roomName, userID, nickName) => {
-    // Directly setting because I need it to be synchronous.
-    this.state.roomName = roomName;
-    this.state.uid = userID;
-    this.state.nickName = nickName;
-    // Set a listener so server can issue state changes.
-    let stateRef = firebase.database().ref('/rooms/' + roomName + '/states/' + userID);
-    stateRef.on('value', this.onStateChange);
-    stateRef.onDisconnect().remove();
-    // This assumes set cannot fail.
-    stateRef.set({
+    let gameRef = firebase.database().ref('/rooms/' + roomName + '/game');
+    this.setState({
       mainView: 'ROOM_VIEW',
-      viewProps: {},
+      viewProps: {
+      },
+      roomName: roomName,
+      userID: userID,
+      nickName: nickName,
+    });
+    gameRef.on('value', (snapshot) => {
+      const value = snapshot.val();
+      console.log("onJoinedRoom's gameRef tripped.");
+      console.log(value);
+      if (value && value.settings && value.settings.order) {
+        if (value.settings.order[userID]) {
+          this.setState({
+            mainView: 'GAME_VIEW',
+            viewProps: {
+              settings: value.settings,
+              gameRef: snapshot.ref,
+            },
+          });
+          snapshot.ref.off('value');
+        } // else: user was not included in game, wait until next game.
+      }
     });
   }
 
@@ -185,14 +199,6 @@ class App extends Component {
   }
 
   /***************************************************************************
-   * Firebase Listeners                                                      *
-   ***************************************************************************/
-
-  onStateChange = (snapshot) => {
-    this.setState(snapshot.val());
-  }
-
-  /***************************************************************************
    * Render                                                                  *
    ***************************************************************************/
 
@@ -202,51 +208,14 @@ class App extends Component {
         <RoomComponent
           viewProps={this.state.viewProps}
           roomName={this.state.roomName}
-          uid={this.state.uid}
+          userID={this.state.userID}
           nickName={this.state.nickName}
           roomRef={firebase.database().ref('/rooms/' + this.state.roomName)}
         />
       );
-    } else if (this.state.mainView === 'START_VIEW') {
-      return (
-        <StartComponent
-          viewProps={this.state.viewProps}
-          roomName={this.state.roomName}
-          uid={this.state.uid}
-          nickName={this.state.nickName}
-          roomRef={firebase.database().ref('/rooms/' + this.state.roomName)}
-        />
-      );
-    } else if (this.state.mainView === 'DRAW_VIEW') {
-      return (
-        <DrawComponent
-          viewProps={this.state.viewProps}
-          roomName={this.state.roomName}
-          uid={this.state.uid}
-          nickName={this.state.nickName}
-          roomRef={firebase.database().ref('/rooms/' + this.state.roomName)}
-        />
-      );
-    } else if (this.state.mainView === 'GUESS_VIEW') {
-      return (
-        <GuessComponent
-          viewProps={this.state.viewProps}
-          roomName={this.state.roomName}
-          uid={this.state.uid}
-          nickName={this.state.nickName}
-          roomRef={firebase.database().ref('/rooms/' + this.state.roomName)}
-        />
-      );
-    } else if (this.state.mainView === 'SPECTATE_VIEW') {
-      return (
-        <SpectateComponent
-          viewProps={this.state.viewProps}
-          roomName={this.state.roomName}
-          uid={this.state.uid}
-          nickName={this.state.nickName}
-          roomRef={firebase.database().ref('/rooms/' + this.state.roomName)}
-        />
-      );
+    } else if (this.state.mainView === 'GAME_VIEW') {
+      console.log('Switched to GAME_VIEW with settings:', this.state.settings);
+      return (<div><p>DEBUG</p></div>);
     } else { // Default to ENTRY_VIEW.
       return (
         <Entry

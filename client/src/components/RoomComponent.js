@@ -62,17 +62,16 @@ export default class RoomComponent extends Component {
       if (snapshot.val()) {
         // Construct array of object's values' nickName.
         this.setState({
-          users: Object.values(snapshot.val()).map((value) => {
-            return value.nickName;
-          })
+          users: snapshot.val(),
         });
       }
     });
 
     // Register a listener for shared room state, such as round time limit.
-    this.sharedRef = this.state.roomRef.child('waiting_room_state');
+    this.sharedRef = this.state.roomRef.child('waitingState');
     this.sharedRef.on('value', (snapshot) => {
       if (snapshot.val()) {
+        console.log('sharedState:', snapshot.val());
         this.setState({
           sharedState: snapshot.val()
         });
@@ -89,7 +88,7 @@ export default class RoomComponent extends Component {
     return {
       roomRef: props.roomRef,
       roomName: props.roomName,
-      uid: props.uid,
+      userID: props.userID,
     };
   }
 
@@ -103,34 +102,49 @@ export default class RoomComponent extends Component {
   }
 
   handleStartButton = (event) => {
-    const request = {
-      roomName: this.state.roomName,
-      settings: this.state.sharedState,
-    };
-    // Save shared state to firebase, then ask server to start game.
-    this.sharedRef.set(this.state.sharedState).then(() => {
-      fetch('start', {
-        method: 'post',
-        headers: {
-          'Content-type': 'application/json'
-        },
-        body: JSON.stringify(request)
-      }).then(this.statusHandler)
-      .catch((error) => { window.alert('Request failed: ' + error) });
-      // Do nothing on success, raise alert on failure.
-    });
-  }
-
-  /***************************************************************************
-   * HTTPS Request Helpers                                                   *
-   ***************************************************************************/
-
-  statusHandler = (response) => {
-    if (response.status >= 200 && response.status < 300) {
-      return Promise.resolve(response);
-    } else {
-      return Promise.reject(new Error(response.statusText));
+    console.log('this.state.users: ', this.state.users);
+    if (!this.state.users) {
+      window.alert('Internal Error: No users found.');
+      return;
     }
+
+    // Determine gameplay order based on user state.
+    const userIDs = Object.keys(this.state.users);
+    const usersLength = userIDs.length;
+    if (usersLength < 2) {
+      window.alert("Can't start game with less than 2 players.");
+      return;
+    }
+    let order = {};
+    order[userIDs[0]] = {
+      prev: userIDs[usersLength - 1],
+    };
+    for (let i = 1; i < usersLength; ++i) {
+      order[userIDs[i]] = {
+        prev: userIDs[i-1],
+      };
+      order[userIDs[i-1]].next = userIDs[i];
+    }
+    order[userIDs[usersLength - 1]].next = userIDs[0];
+    console.log('order:', order);
+
+    return this.state.roomRef.child('game').transaction((currentData) => {
+      if (currentData === null) {
+        return {
+          settings: Object.assign(this.state.sharedState, {order: order}),
+        };
+      } else {
+        return; // Abort the transaction.
+      };
+    }, (error, committed, snapshot) => {
+      if (error) {
+        window.alert('Error: ' + error);
+      } else if (!committed) {
+        window.alert('Game is already started.');
+      } else {
+        console.log('Game started successfully.');
+      }
+    });
   }
 
   /***************************************************************************
@@ -139,13 +153,16 @@ export default class RoomComponent extends Component {
 
   getUserListItems = () => {
     if (this.state.users && this.state.users.length) {
-      return this.state.users.map((user) => {
+      return Object.values(this.state.users).map((user) => {
         return (
           <ListItem>
             <ListItemIcon>
               <UserActive />
             </ListItemIcon>
-            <ListItemText primary={user} primaryTypographyProps={{variant: 'h6'}} />
+            <ListItemText
+              primary={user.nickName}
+              primaryTypographyProps={{variant: 'h6'}}
+            />
           </ListItem>
         );
       }).reduce((prev, curr) => [prev, <Divider />, curr]);
