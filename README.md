@@ -1,6 +1,6 @@
 # ChalkChain
 
-Try it at http://chalkchain.appspot.com.
+Try it at https://subtlemon.github.io/ChalkChain/ or http://chalkchain.appspot.com.
 
 ## The Game
 
