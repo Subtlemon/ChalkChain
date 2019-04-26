@@ -24,53 +24,44 @@ export default class DrawComponent extends Component {
     super(props);
 
     this.state = {
-      word: 'Loading word...'
+      timer: 60,
     };
   }
 
   componentDidMount = () => {
-    this.setState({ready: false, timeLeft: undefined});
-    this.state.roomRef.child('chains')
-      .child(this.state.chainUid)
-      .limitToLast(1)
-      .once('child_added', (snapshot) => {
-        if (snapshot.val()) {
-          this.setState({word: snapshot.val().word});
+    this.progressPresenseRef = this.state.progressRef.child(this.state.chainID);
+    this.progressPresenseRef.onDisconnect().remove();
+    this.progressPresenseRef.set(false);
+    this.setState({ready: false, timer: this.state.drawTime});
+    
+    // Set timer.
+    this.intervalID = setInterval(() => {
+      this.setState({timer: this.state.timer - 1});
+      if (this.state.timer <= 0) {
+        clearInterval(this.intervalID);
+        if (!this.state.ready) {
+          this.handleConfirmDrawing();
         }
-      });
-    this.state.roomRef.child('game_state/drawTime').once('value', (snapshot) => {
-      if (snapshot.val()) {
-        this.setState({timer: snapshot.val()});
-        setInterval(() => {
-          this.setState({timer: this.state.timer - 1});
-          if (this.state.timer <= 0) {
-            clearInterval(this.intervalId);
-            if (!this.state.ready) {
-              this.handleConfirmDrawing();
-              // eslint-disable-next-line
-              this.state.ready = true;
-            }
-          }
-        }, 1000);
       }
-    });
+    }, 1000);
   }
 
   componentWillUnmount = () => {
-    if (this.intervalId) {
-      clearInterval(this.intervalId);
+    if (this.intervalID) {
+      clearInterval(this.intervalID);
     }
     delete this.chainRef;
   }
 
   static getDerivedStateFromProps(props, state) {
     return {
-      roomRef: props.roomRef,
-      roomName: props.roomName,
-      uid: props.uid,
-      nickName: props.nickName,
-      chainUid: props.viewProps.chainUid,
-      nextNick: props.viewProps.nextNick,
+      gameRef: props.gameRef,
+      progressRef: props.progressRef,
+      players: props.players,
+      drawTime: props.drawTime,
+      userID: props.userID,
+      chainID: props.chainID,
+      data: props.data,
     };
   }
 
@@ -82,37 +73,19 @@ export default class DrawComponent extends Component {
     if (this.chainRef) {
       this.chainRef.update({image: this.refs.drawing.refs.canvas.toDataURL()});
     } else {
-      this.chainRef = this.state.roomRef.child('chains').child(this.state.chainUid).push();
+      this.chainRef = this.state.gameRef.child('chains').child(this.state.chainID).push();
       this.chainRef.set({
-        uid: this.state.uid,
-        nickName: this.state.nickName,
         image: this.refs.drawing.refs.canvas.toDataURL(),
+        userID: this.state.userID,
       });
     }
-    if (!this.state.ready) {
-      const request = {
-        roomName: this.state.roomName,
-        uid: this.state.uid,
-        image: this.state.debug_image,
-        chainUid: this.state.chainUid,
-      };
-      fetch('advance', {
-        method: 'post',
-        headers: {
-          'Content-type': 'application/json'
-        },
-        body: JSON.stringify(request)
-      }).then(this.statusHandler)
-      .then(() => this.setState({ready: true}))
-      .catch((error) => window.alert('Request failed: ' + error));
-    }
-  }
 
-  statusHandler = (response) => {
-    if (response.status >= 200 && response.status < 300) {
-      return Promise.resolve(response);
-    } else {
-      return Promise.reject(new Error(response.statusText));
+    if (!this.state.ready) {
+      this.progressPresenseRef.remove().then(() => {
+        this.progressPresenseRef.onDisconnect().cancel();
+        delete this.progressPresenseRef;
+      });
+      this.setState({ready: true});
     }
   }
 
@@ -125,10 +98,10 @@ export default class DrawComponent extends Component {
       <div style={styles.layout}>
         <Paper style={styles.paper}>
           <Typography variant='h6'>
-            You are drawing <b>{this.state.nextNick}</b>'s word:
+            You are drawing <b>{this.state.players[this.state.data.userID].nickName}</b>'s word:
           </Typography>
           <Typography variant='h5'>
-            <b>{this.state.word}</b>
+            <b>{this.state.data.word}</b>
           </Typography>
         </Paper>
         <Divider style={styles.divider} />

@@ -41,7 +41,7 @@ export default class SpectateComponent extends Component {
 
   componentDidMount = () => {
     // Register a listener for shared room state.
-    this.sharedRef = this.state.roomRef.child('spectate_state');
+    this.sharedRef = this.state.gameRef.child('spectateState');
     this.sharedRef.on('value', (snapshot) => {
       if (snapshot.val()) {
         this.setState({
@@ -52,7 +52,7 @@ export default class SpectateComponent extends Component {
     });
 
     // Load in all chain data.
-    this.state.roomRef.child('chains').once('value').then((snapshot) => {
+    this.state.gameRef.child('chains').once('value').then((snapshot) => {
       if (snapshot.val()) {
         let chains = {};
         snapshot.forEach((chainSnapshot) => {
@@ -69,17 +69,11 @@ export default class SpectateComponent extends Component {
     });
   }
 
-  componentWillUnmount() {
-    let gameRef = this.state.roomRef.child('in_game').child(this.state.uid);
-    gameRef.remove().then(() => {gameRef.onDisconnect().cancel()});
-    this.sharedRef.off('value');
-  }
-
   static getDerivedStateFromProps(props, state) {
     return {
-      roomRef: props.roomRef,
-      roomName: props.roomName,
-      uid: props.uid,
+      gameRef: props.gameRef,
+      players: props.players,
+      userID: props.userID,
     };
   }
 
@@ -89,52 +83,55 @@ export default class SpectateComponent extends Component {
 
   handleStartSync = (event) => {
     this.sharedRef.set({
-      chainUid: this.state.uid,
+      chainID: this.state.userID,
     });
   }
 
   handleNext = (event) => {
-    const chainUids = Object.keys(this.state.chains);
-    let idx = chainUids.indexOf(this.state.sharedState.chainUid) + 1;
-    if (idx >= chainUids.length) {
+    const chainIDs = Object.keys(this.state.chains);
+    let idx = chainIDs.indexOf(this.state.sharedState.chainID) + 1;
+    if (idx >= chainIDs.length) {
       idx = 0;
     }
     this.sharedRef.set({
-      chainUid: chainUids[idx],
+      chainID: chainIDs[idx],
     });
   }
 
   handlePrevious = (event) => {
-    const chainUids = Object.keys(this.state.chains);
-    let idx = chainUids.indexOf(this.state.sharedState.chainUid);
+    const chainIDs = Object.keys(this.state.chains);
+    let idx = chainIDs.indexOf(this.state.sharedState.chainID);
     if (idx === 0) {
-      idx = chainUids.length;
+      idx = chainIDs.length;
     }
     this.sharedRef.set({
-      chainUid: chainUids[idx-1],
+      chainID: chainIDs[idx-1],
     });
   }
 
   handleLeave = (event) => {
-    this.state.roomRef.child('states').child(this.state.uid).set({
-      mainView: 'ROOM_VIEW',
-      viewProps: {},
-    });
+    if (this.props.onLeave) {
+      this.props.onLeave();
+    } else {
+      console.log('No onLeave handler found.');
+    }
   }
 
   /***************************************************************************
    * Render                                                                  *
    ***************************************************************************/
 
-  getChainItems = (chainUid) => {
+  getChainItems = (chainID) => {
+    console.log('chains', this.state.chains);
+    console.log('chainID', chainID);
     return [
       <Typography variant='h6'>
-        Your word was: <b>{this.state.chains[chainUid][0].word}</b>
+        The original word was: <b>{this.state.chains[chainID][0].word}</b>
       </Typography>,
       <Divider style={styles.divider} />,
-      this.state.chains[chainUid].slice(1).map((chainLink) => {
+      this.state.chains[chainID].slice(1).map((chainLink) => {
         return (
-          <ChainLinkView data={chainLink} />
+          <ChainLinkView data={chainLink} players={this.state.players} />
         );
       }),
     ];
@@ -142,13 +139,13 @@ export default class SpectateComponent extends Component {
   
   getMainComponent = () => {
     if (this.state.chains) {
-      let chainUid = this.state.uid;
-      if (this.state.sharedState && this.state.sharedState.chainUid) {
-        chainUid = this.state.sharedState.chainUid;
+      let chainID = this.state.userID;
+      if (this.state.sharedState && this.state.sharedState.chainID) {
+        chainID = this.state.sharedState.chainID;
       }
       return (
         <div style={styles.chainContainer}>
-          {this.getChainItems(chainUid)}
+          {this.getChainItems(chainID)}
         </div>
       );
     } else {

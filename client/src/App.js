@@ -5,10 +5,7 @@ import 'firebase/database';
 import './App.css';
 import Entry from './components/Entry';
 import RoomComponent from './components/RoomComponent';
-import StartComponent from './components/StartComponent';
-import DrawComponent from './components/DrawComponent';
-import GuessComponent from './components/GuessComponent';
-import SpectateComponent from './components/SpectateComponent';
+import GameComponent from './components/GameComponent';
 
 class App extends Component {
   constructor(props) {
@@ -26,8 +23,7 @@ class App extends Component {
     firebase.initializeApp(config);
 
     this.state = {
-      mainComponent: 'ENTRY_VIEW',
-      mainComponentProps: undefined
+      mainView: 'ENTRY_VIEW',
     };
   }
 
@@ -67,15 +63,6 @@ class App extends Component {
     );
   }
 
-  // Currently unused.
-  statusHandler = (response) => {
-    if (response.status >= 200 && response.status < 300) {
-      return Promise.resolve(response);
-    } else {
-      return Promise.reject(new Error(response.statusText));
-    }
-  }
-
   /***************************************************************************
    * Entry Request Helpers                                                   *
    ***************************************************************************/
@@ -84,6 +71,7 @@ class App extends Component {
    * Recursively attempts to create a room with a random name.
    *
    * On success, calls onSuccess with room name, user ID, and nickname.
+   *    Also sets a presense node under /rooms/<roomName>/users/<userID>
    * On error, returns error message.
    */
   createRandomRoom = (nickName, onSuccess, onError) => {
@@ -100,6 +88,7 @@ class App extends Component {
    * Attempts to create a room with roomName.
    * 
    * On success, calls onSuccess with room name, user ID, and nickname.
+   *    Also sets a presense node under /rooms/<roomName>/users/<userID>
    * On error, returns error message.
    * On room exists, calls onRoomExist with nickname, onSuccess, and onError.
    */
@@ -122,7 +111,7 @@ class App extends Component {
         onError(error);
       } else if (!committed) {
         if (onRoomExist) {
-          onRoomExist(nickName);
+          onRoomExist(nickName, onSuccess, onError);
         }
       } else {
         let presenseRef = firebase.database().ref(roomUrl + '/users').push();
@@ -130,7 +119,7 @@ class App extends Component {
         // Note: This assumes set cannot fail.
         presenseRef.set({
           nickName: nickName
-        }).then(() => onSuccess(roomName, presenseRef.key, nickName));
+        }).then(() => onSuccess(roomName, presenseRef.key));
       }
     });
   }
@@ -138,7 +127,8 @@ class App extends Component {
   /**
    * Attempts to join a room with roomName.
    *
-   * On success, calls onSuccess with room name, user ID, and nickname.
+   * On success, calls onSuccess with room name and user ID.
+   *    Also sets a presense node under /rooms/<roomName>/users/<userID>
    * On no room, calls onNoRoom.
    * This function cannot actually call onError.
    */
@@ -151,26 +141,43 @@ class App extends Component {
         // Note: This assumes set cannot fail.
         presenseRef.set({
           nickName: nickName
-        }).then(() => onSuccess(roomName, presenseRef.key, nickName));
+        }).then(() => onSuccess(roomName, presenseRef.key));
       } else {
         onNoRoom();
       }
     });
   }
 
-  onJoinedRoom = (roomName, userID, nickName) => {
-    // Directly setting because I need it to be synchronous.
-    this.state.roomName = roomName;
-    this.state.uid = userID;
-    this.state.nickName = nickName;
-    // Set a listener so server can issue state changes.
-    let stateRef = firebase.database().ref('/rooms/' + roomName + '/states/' + userID);
-    stateRef.on('value', this.onStateChange);
-    stateRef.onDisconnect().remove();
-    // This assumes set cannot fail.
-    stateRef.set({
+  /**
+   * Moves self to waiting room, and sets a watch for game start.
+   *    Watches /rooms/<roomName>/game, and moves to GAME_VIEW if userID is
+   *    found under game/settings/order (AKA user is supposed to be in game).
+   *
+   * Note: This function can fail, but has no error handling.
+   */
+  onJoinedRoom = (roomName, userID) => {
+    let gameRef = firebase.database().ref('/rooms/' + roomName + '/game');
+    this.setState({
       mainView: 'ROOM_VIEW',
-      viewProps: {},
+      viewProps: {
+      },
+      roomName: roomName,
+      userID: userID,
+    });
+    gameRef.on('value', (snapshot) => {
+      const value = snapshot.val();
+      if (value && value.settings && value.settings.players) {
+        if (value.settings.players[userID]) {
+          this.setState({
+            mainView: 'GAME_VIEW',
+            viewProps: {
+              settings: value.settings,
+              gameRef: snapshot.ref,
+            },
+          });
+          snapshot.ref.off('value');
+        } // else: user was not included in game, wait until next game.
+      }
     });
   }
 
@@ -184,12 +191,8 @@ class App extends Component {
     }).join('').toUpperCase();
   }
 
-  /***************************************************************************
-   * Firebase Listeners                                                      *
-   ***************************************************************************/
-
-  onStateChange = (snapshot) => {
-    this.setState(snapshot.val());
+  handleLeaveGame = () => {
+    this.onJoinedRoom(this.state.roomName, this.state.userID);
   }
 
   /***************************************************************************
@@ -202,49 +205,16 @@ class App extends Component {
         <RoomComponent
           viewProps={this.state.viewProps}
           roomName={this.state.roomName}
-          uid={this.state.uid}
-          nickName={this.state.nickName}
+          userID={this.state.userID}
           roomRef={firebase.database().ref('/rooms/' + this.state.roomName)}
         />
       );
-    } else if (this.state.mainView === 'START_VIEW') {
+    } else if (this.state.mainView === 'GAME_VIEW') {
       return (
-        <StartComponent
+        <GameComponent
           viewProps={this.state.viewProps}
-          roomName={this.state.roomName}
-          uid={this.state.uid}
-          nickName={this.state.nickName}
-          roomRef={firebase.database().ref('/rooms/' + this.state.roomName)}
-        />
-      );
-    } else if (this.state.mainView === 'DRAW_VIEW') {
-      return (
-        <DrawComponent
-          viewProps={this.state.viewProps}
-          roomName={this.state.roomName}
-          uid={this.state.uid}
-          nickName={this.state.nickName}
-          roomRef={firebase.database().ref('/rooms/' + this.state.roomName)}
-        />
-      );
-    } else if (this.state.mainView === 'GUESS_VIEW') {
-      return (
-        <GuessComponent
-          viewProps={this.state.viewProps}
-          roomName={this.state.roomName}
-          uid={this.state.uid}
-          nickName={this.state.nickName}
-          roomRef={firebase.database().ref('/rooms/' + this.state.roomName)}
-        />
-      );
-    } else if (this.state.mainView === 'SPECTATE_VIEW') {
-      return (
-        <SpectateComponent
-          viewProps={this.state.viewProps}
-          roomName={this.state.roomName}
-          uid={this.state.uid}
-          nickName={this.state.nickName}
-          roomRef={firebase.database().ref('/rooms/' + this.state.roomName)}
+          userID={this.state.userID}
+          onLeave={this.handleLeaveGame}
         />
       );
     } else { // Default to ENTRY_VIEW.

@@ -17,13 +17,17 @@ const styles = {
 export default class StartComponent extends Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      ready: false,
+      word: '',
+    };
   }
 
   componentDidMount = () => {
-    // Establish presense in game.
-    let presenseRef = this.state.roomRef.child('in_game').child(this.state.uid);
-    presenseRef.onDisconnect().remove();
-    presenseRef.set(this.state.nickName);
+    this.progressPresenseRef = this.state.progressRef.child(this.state.chainID);
+    this.progressPresenseRef.onDisconnect().remove();
+    this.progressPresenseRef.set(false);
     this.setState({ready: false});
   }
 
@@ -33,11 +37,11 @@ export default class StartComponent extends Component {
 
   static getDerivedStateFromProps(props, state) {
     return {
-      roomRef: props.roomRef,
-      roomName: props.roomName,
-      uid: props.uid,
-      nickName: props.nickName,
-      prevNick: props.viewProps.prevNick,
+      gameRef: props.gameRef,
+      progressRef: props.progressRef,
+      chainID: props.chainID,
+      prevNick: props.players[props.prevID].nickName,
+      users: props.players,
     };
   }
 
@@ -54,39 +58,22 @@ export default class StartComponent extends Component {
     if (this.chainRef) {
       this.chainRef.update({word: this.state.word});
     } else {
-      this.chainRef = this.state.roomRef.child('chains').child(this.state.uid).push();
+      this.chainRef = this.state.gameRef.child('chains').child(this.state.chainID).push();
       this.chainRef.set({
         word: this.state.word,
-        uid: this.state.uid,
-        nickName: this.state.nickName,
+        userID: this.state.chainID,
       });
     }
 
     if (!this.state.ready) {
-      const request = {
-        roomName: this.state.roomName,
-        uid: this.state.uid,
-      };
-      fetch('advance', {
-        method: 'post',
-        headers: {
-          'Content-type': 'application/json'
-        },
-        body: JSON.stringify(request)
-      }).then(this.statusHandler)
-      .then(() => this.setState({ready: true}))
-      .catch((error) => window.alert('Request failed: ' + error));
+      this.progressPresenseRef.remove().then(() => {
+        this.progressPresenseRef.onDisconnect().cancel();
+        delete this.progressPresenseRef;
+      });
+      this.setState({ready: true});
     }
   }
   
-  statusHandler = (response) => {
-    if (response.status >= 200 && response.status < 300) {
-      return Promise.resolve(response);
-    } else {
-      return Promise.reject(new Error(response.statusText));
-    }
-  }
-
   /***************************************************************************
    * Render                                                                  *
    ***************************************************************************/
