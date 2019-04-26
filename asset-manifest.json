@@ -1,14 +1,14 @@
 {
-  "main.css": "/static/css/main.9886fc96.chunk.css",
-  "main.js": "/static/js/main.f9d44080.chunk.js",
-  "main.js.map": "/static/js/main.f9d44080.chunk.js.map",
-  "runtime~main.js": "/static/js/runtime~main.a8a9905a.js",
-  "runtime~main.js.map": "/static/js/runtime~main.a8a9905a.js.map",
-  "static/js/2.39a106c5.chunk.js": "/static/js/2.39a106c5.chunk.js",
-  "static/js/2.39a106c5.chunk.js.map": "/static/js/2.39a106c5.chunk.js.map",
-  "index.html": "/index.html",
-  "precache-manifest.94fa5b17b55572c6ce35ed7bd1547a2e.js": "/precache-manifest.94fa5b17b55572c6ce35ed7bd1547a2e.js",
-  "service-worker.js": "/service-worker.js",
-  "static/css/main.9886fc96.chunk.css.map": "/static/css/main.9886fc96.chunk.css.map",
-  "static/media/logo.svg": "/static/media/logo.ac288ddb.svg"
+  "main.css": "/ChalkChain/static/css/main.9886fc96.chunk.css",
+  "main.js": "/ChalkChain/static/js/main.04816107.chunk.js",
+  "main.js.map": "/ChalkChain/static/js/main.04816107.chunk.js.map",
+  "runtime~main.js": "/ChalkChain/static/js/runtime~main.96992e19.js",
+  "runtime~main.js.map": "/ChalkChain/static/js/runtime~main.96992e19.js.map",
+  "static/js/2.182bea84.chunk.js": "/ChalkChain/static/js/2.182bea84.chunk.js",
+  "static/js/2.182bea84.chunk.js.map": "/ChalkChain/static/js/2.182bea84.chunk.js.map",
+  "index.html": "/ChalkChain/index.html",
+  "precache-manifest.720cb83e0871b85b5745704760151106.js": "/ChalkChain/precache-manifest.720cb83e0871b85b5745704760151106.js",
+  "service-worker.js": "/ChalkChain/service-worker.js",
+  "static/css/main.9886fc96.chunk.css.map": "/ChalkChain/static/css/main.9886fc96.chunk.css.map",
+  "static/media/logo.svg": "/ChalkChain/static/media/logo.ac288ddb.svg"
 }
