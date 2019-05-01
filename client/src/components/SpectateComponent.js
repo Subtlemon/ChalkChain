@@ -122,8 +122,6 @@ export default class SpectateComponent extends Component {
    ***************************************************************************/
 
   getChainItems = (chainID) => {
-    console.log('chains', this.state.chains);
-    console.log('chainID', chainID);
     return [
       <Typography variant='h6'>
         The original word was: <b>{this.state.chains[chainID][0].word}</b>
