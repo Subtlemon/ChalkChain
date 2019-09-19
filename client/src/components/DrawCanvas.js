@@ -38,6 +38,10 @@ const styles = {
     gridTemplateColumns: '40px 40px 40px 40px 40px',
     gridTemplateRows: '40px 40px',
   },
+  svg: {
+    height: '100%',
+    width: '100%',
+  },
   misc: {
     justifySelf: 'center',
     display: 'grid',
@@ -209,17 +213,17 @@ export default class DrawCanvas extends Component {
           <div style={styles.misc}>
             <Tooltip title='Small Brush' placement='top'>
               <Paper onClick={this.handleNewRadius.bind(this, 1)}>
-                <svg><circle cx='20' cy='20' r='5' fill='black' /></svg>
+                <svg style={styles.svg}><circle cx='20' cy='20' r='5' fill='black' /></svg>
               </Paper>
             </Tooltip>
             <Tooltip title='Medium Brush' placement='top'>
               <Paper onClick={this.handleNewRadius.bind(this, 3)}>
-                <svg><circle cx='20' cy='20' r='10' fill='black' /></svg>
+                <svg style={styles.svg}><circle cx='20' cy='20' r='10' fill='black' /></svg>
               </Paper>
             </Tooltip>
             <Tooltip title='Large Brush' placement='bottom'>
               <Paper onClick={this.handleNewRadius.bind(this, 15)}>
-                <svg><circle cx='20' cy='20' r='15' fill='black' /></svg>
+                <svg style={styles.svg}><circle cx='20' cy='20' r='15' fill='black' /></svg>
               </Paper>
             </Tooltip>
             <Tooltip title='Fill Screen' placement='bottom'>
