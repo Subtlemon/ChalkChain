@@ -71,6 +71,10 @@ export default class DrawCanvas extends Component {
     this.ctx.fillStyle = 'white';
     this.clearscreen();
     this.ctx.fillStyle = this.state.colour;
+
+    // Workaround to enable preventDefault()
+    // https://github.com/facebook/react/issues/9809
+    canvas.ontouchmove = this.handleTouchMove;
   }
 
   componentDidUpdate() {
@@ -126,6 +130,8 @@ export default class DrawCanvas extends Component {
 
   handleTouchMove = (event) => {
     if (event.touches.length) {
+      event.preventDefault();
+      console.log("preventing default?");
       this.handleMouseMove(event.touches[0]);
     }
   }
@@ -182,7 +188,7 @@ export default class DrawCanvas extends Component {
             onMouseMove={this.handleMouseMove}
             onTouchStart={this.handleTouchStart}
             onTouchEnd={this.handleTouchEnd}
-            onTouchMove={this.handleTouchMove}
+            // Moved onTouchMove to componentDidMount.
             style={styles.canvas}
           />
         </Paper>
