@@ -9,12 +9,18 @@ import ClearIcon from '@material-ui/icons/Delete';
 
 const styles = {
   canvas: {
+    position: 'absolute',
     height: '100%',
     width: '100%',
+    top: '0',
+    left: '0',
   },
   canvasContainer: {
-    height: '500px',
-    width: '400px',
+    position: 'relative',
+    paddingTop: '100%',
+    width: '100%',
+    maxHeight: '500px',
+    maxWidth: '500px',
   },
   divider: {
     margin: '10px',
@@ -31,6 +37,10 @@ const styles = {
     gridRowGap: '5px',
     gridTemplateColumns: '40px 40px 40px 40px 40px',
     gridTemplateRows: '40px 40px',
+  },
+  svg: {
+    height: '100%',
+    width: '100%',
   },
   misc: {
     justifySelf: 'center',
@@ -65,6 +75,10 @@ export default class DrawCanvas extends Component {
     this.ctx.fillStyle = 'white';
     this.clearscreen();
     this.ctx.fillStyle = this.state.colour;
+
+    // Workaround to enable preventDefault()
+    // https://github.com/facebook/react/issues/9809
+    canvas.ontouchmove = this.handleTouchMove;
   }
 
   componentDidUpdate() {
@@ -120,6 +134,8 @@ export default class DrawCanvas extends Component {
 
   handleTouchMove = (event) => {
     if (event.touches.length) {
+      event.preventDefault();
+      console.log("preventing default?");
       this.handleMouseMove(event.touches[0]);
     }
   }
@@ -176,7 +192,7 @@ export default class DrawCanvas extends Component {
             onMouseMove={this.handleMouseMove}
             onTouchStart={this.handleTouchStart}
             onTouchEnd={this.handleTouchEnd}
-            onTouchMove={this.handleTouchMove}
+            // Moved onTouchMove to componentDidMount.
             style={styles.canvas}
           />
         </Paper>
@@ -197,17 +213,17 @@ export default class DrawCanvas extends Component {
           <div style={styles.misc}>
             <Tooltip title='Small Brush' placement='top'>
               <Paper onClick={this.handleNewRadius.bind(this, 1)}>
-                <svg><circle cx='20' cy='20' r='5' fill='black' /></svg>
+                <svg style={styles.svg}><circle cx='20' cy='20' r='5' fill='black' /></svg>
               </Paper>
             </Tooltip>
             <Tooltip title='Medium Brush' placement='top'>
               <Paper onClick={this.handleNewRadius.bind(this, 3)}>
-                <svg><circle cx='20' cy='20' r='10' fill='black' /></svg>
+                <svg style={styles.svg}><circle cx='20' cy='20' r='10' fill='black' /></svg>
               </Paper>
             </Tooltip>
             <Tooltip title='Large Brush' placement='bottom'>
               <Paper onClick={this.handleNewRadius.bind(this, 15)}>
-                <svg><circle cx='20' cy='20' r='15' fill='black' /></svg>
+                <svg style={styles.svg}><circle cx='20' cy='20' r='15' fill='black' /></svg>
               </Paper>
             </Tooltip>
             <Tooltip title='Fill Screen' placement='bottom'>
