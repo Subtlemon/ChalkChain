@@ -9,12 +9,18 @@ import ClearIcon from '@material-ui/icons/Delete';
 
 const styles = {
   canvas: {
+    position: 'absolute',
     height: '100%',
     width: '100%',
+    top: '0',
+    left: '0',
   },
   canvasContainer: {
-    height: '500px',
-    width: '400px',
+    position: 'relative',
+    paddingTop: '100%',
+    width: '100%',
+    maxHeight: '500px',
+    maxWidth: '500px',
   },
   divider: {
     margin: '10px',
