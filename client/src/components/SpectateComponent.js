@@ -83,8 +83,13 @@ export default class SpectateComponent extends Component {
 
   handleStartSync = (event) => {
     this.sharedRef.set({
+      driverID: this.state.userID,
       chainID: this.state.userID,
     });
+  }
+
+  handleBecomeDriver = (event) => {
+    this.sharedRef.update({driverID: this.state.userID});
   }
 
   handleNext = (event) => {
@@ -93,7 +98,7 @@ export default class SpectateComponent extends Component {
     if (idx >= chainIDs.length) {
       idx = 0;
     }
-    this.sharedRef.set({
+    this.sharedRef.update({
       chainID: chainIDs[idx],
     });
   }
@@ -104,7 +109,7 @@ export default class SpectateComponent extends Component {
     if (idx === 0) {
       idx = chainIDs.length;
     }
-    this.sharedRef.set({
+    this.sharedRef.update({
       chainID: chainIDs[idx-1],
     });
   }
@@ -167,6 +172,7 @@ export default class SpectateComponent extends Component {
           </Typography>
           <Button
             variant='contained'
+            disabled={this.state.sharedState.driverID !== this.state.userID}
             onClick={this.handlePrevious}
             style={{margin: '5px'}}
           >
@@ -174,6 +180,15 @@ export default class SpectateComponent extends Component {
           </Button>
           <Button
             variant='contained'
+            disabled={this.state.sharedState.driverID === this.state.userID}
+            onClick={this.handleBecomeDriver}
+            style={{margin: '5px'}}
+          >
+            Become Driver
+          </Button>
+          <Button
+            variant='contained'
+            disabled={this.state.sharedState.driverID !== this.state.userID}
             onClick={this.handleNext}
             style={{margin: '5px'}}
           >
