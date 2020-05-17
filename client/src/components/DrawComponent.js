@@ -47,7 +47,6 @@ export default class DrawComponent extends Component {
   }
 
   componentWillUnmount = () => {
-    this.state.progressRef.off('value', this.numNotReadyListener);
     if (this.intervalID) {
       clearInterval(this.intervalID);
     }
@@ -62,6 +61,7 @@ export default class DrawComponent extends Component {
       drawTime: props.drawTime,
       userID: props.userID,
       chainID: props.chainID,
+      numNotReady: props.numNotReady,
       data: props.data,
     };
   }
@@ -86,12 +86,6 @@ export default class DrawComponent extends Component {
         this.progressPresenseRef.onDisconnect().cancel();
         delete this.progressPresenseRef;
       });
-      this.numNotReadyListener = (snapshot) => {
-        if (snapshot.val()) {
-          this.setState({numNotReady: Object.keys(snapshot.val()).length});
-        }
-      };
-      this.state.progressRef.on('value', this.numNotReadyListener);
       this.setState({ready: true});
     }
   }
@@ -119,7 +113,7 @@ export default class DrawComponent extends Component {
             {this.state.timer ? this.state.timer + 's remaining' : ''}
           </Typography>
           <Typography>
-            {this.state.numNotReady ? 'Waiting on ' + this.state.numNotReady + ' players...' : ''}
+            {this.state.numNotReady && this.state.ready ? 'Waiting on ' + this.state.numNotReady + ' players...' : ''}
           </Typography>
           <Button
             variant='contained'

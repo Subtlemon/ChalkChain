@@ -46,6 +46,7 @@ export default class GuessComponent extends Component {
       players: props.players,
       chainID: props.chainID,
       userID: props.userID,
+      numNotReady: props.numNotReady,
       data: props.data,
     };
   }
@@ -98,6 +99,9 @@ export default class GuessComponent extends Component {
         </Paper>
         <Divider style={styles.divider} />
         <Paper style={styles.paper}>
+          <Typography>
+            {this.state.numNotReady && this.state.ready ? 'Waiting on ' + this.state.numNotReady + ' players...' : ''}
+          </Typography>
           <TextField
             label='What do you see?'
             value={this.state.guess}
