@@ -33,7 +33,7 @@ export default class DrawComponent extends Component {
     this.progressPresenseRef.onDisconnect().remove();
     this.progressPresenseRef.set(false);
     this.setState({ready: false, timer: this.state.drawTime});
-    
+
     // Set timer.
     this.intervalID = setInterval(() => {
       this.setState({timer: this.state.timer - 1});
@@ -47,6 +47,7 @@ export default class DrawComponent extends Component {
   }
 
   componentWillUnmount = () => {
+    this.state.progressRef.off('value', this.numNotReadyListener);
     if (this.intervalID) {
       clearInterval(this.intervalID);
     }
@@ -85,6 +86,12 @@ export default class DrawComponent extends Component {
         this.progressPresenseRef.onDisconnect().cancel();
         delete this.progressPresenseRef;
       });
+      this.numNotReadyListener = (snapshot) => {
+        if (snapshot.val()) {
+          this.setState({numNotReady: Object.keys(snapshot.val()).length});
+        }
+      };
+      this.state.progressRef.on('value', this.numNotReadyListener);
       this.setState({ready: true});
     }
   }
@@ -110,6 +117,9 @@ export default class DrawComponent extends Component {
         <Paper style={styles.paper}>
           <Typography variant='h6'>
             {this.state.timer ? this.state.timer + 's remaining' : ''}
+          </Typography>
+          <Typography>
+            {this.state.numNotReady ? 'Waiting on ' + this.state.numNotReady + ' players...' : ''}
           </Typography>
           <Button
             variant='contained'
