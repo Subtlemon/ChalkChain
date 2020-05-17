@@ -32,6 +32,16 @@ export default class GamePhaseComponent extends Component {
 
   componentDidMount = () => {
     this.updateChainLinkData();
+    this.numNotReadyListener = (snapshot) => {
+        if (snapshot.val()) {
+          this.setState({numNotReady: Object.keys(snapshot.val()).length});
+        }
+      };
+    this.props.progressRef.on('value', this.numNotReadyListener);
+  }
+
+  componentWillUnmount = () => {
+    this.props.progressRef.off('value', this.numNotReadyListener);
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -66,6 +76,7 @@ export default class GamePhaseComponent extends Component {
           players={this.state.settings.players}
           chainID={this.state.chainID}
           userID={this.state.userID}
+          numNotReady={this.state.numNotReady}
           data={this.state.chainLinkData}
         />
       );
@@ -78,6 +89,7 @@ export default class GamePhaseComponent extends Component {
           drawTime={this.state.settings.drawTime}
           chainID={this.state.chainID}
           userID={this.state.userID}
+          numNotReady={this.state.numNotReady}
           data={this.state.chainLinkData}
         />
       );

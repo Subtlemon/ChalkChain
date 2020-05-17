@@ -33,7 +33,7 @@ export default class DrawComponent extends Component {
     this.progressPresenseRef.onDisconnect().remove();
     this.progressPresenseRef.set(false);
     this.setState({ready: false, timer: this.state.drawTime});
-    
+
     // Set timer.
     this.intervalID = setInterval(() => {
       this.setState({timer: this.state.timer - 1});
@@ -61,6 +61,7 @@ export default class DrawComponent extends Component {
       drawTime: props.drawTime,
       userID: props.userID,
       chainID: props.chainID,
+      numNotReady: props.numNotReady,
       data: props.data,
     };
   }
@@ -110,6 +111,9 @@ export default class DrawComponent extends Component {
         <Paper style={styles.paper}>
           <Typography variant='h6'>
             {this.state.timer ? this.state.timer + 's remaining' : ''}
+          </Typography>
+          <Typography>
+            {this.state.numNotReady && this.state.ready ? 'Waiting on ' + this.state.numNotReady + ' players...' : ''}
           </Typography>
           <Button
             variant='contained'

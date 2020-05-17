@@ -94,7 +94,7 @@ export default class StartComponent extends Component {
             variant='contained'
             onClick={this.handleConfirmWord}
           >
-            {this.state.ready ? 'Reconfirm' : 'Confirm'}
+            {this.state.ready ? 'Update' : 'Confirm'}
           </Button>
         </Paper>
       </div>
