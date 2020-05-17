@@ -111,7 +111,7 @@ export default class GuessComponent extends Component {
             variant='contained'
             onClick={this.handleConfirmGuess}
           >
-            {this.state.ready ? 'Guess Again' : 'Guess'}
+            {this.state.ready ? 'Update Guess' : 'Guess'}
           </Button>
         </Paper>
       </div>
