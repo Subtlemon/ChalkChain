@@ -267,14 +267,14 @@ export default class DrawCanvas extends Component {
           <div style={styles.colours}>
             <Paper onClick={this.handleColour} style={{backgroundColor: 'black'}}/>
             <Paper onClick={this.handleColour} style={{backgroundColor: 'red'}}/>
-            <Paper onClick={this.handleColour} style={{backgroundColor: 'blue'}}/>
             <Paper onClick={this.handleColour} style={{backgroundColor: 'green'}}/>
+            <Paper onClick={this.handleColour} style={{backgroundColor: 'blue'}}/>
             <Paper onClick={this.handleColour} style={{backgroundColor: 'yellow'}}/>
             <Paper onClick={this.handleColour} style={{backgroundColor: 'white'}}/>
             <Paper onClick={this.handleColour} style={{backgroundColor: 'aqua'}}/>
-            <Paper onClick={this.handleColour} style={{backgroundColor: 'fuchsia'}}/>
+            <Paper onClick={this.handleColour} style={{backgroundColor: 'purple'}}/>
             <Paper onClick={this.handleColour} style={{backgroundColor: 'brown'}}/>
-            <Paper onClick={this.handleColour} style={{backgroundColor: 'lime'}}/>
+            <Paper onClick={this.handleColour} style={{backgroundColor: 'orange'}}/>
           </div>
           <div style={styles.misc}>
             <Tooltip title='Small Brush' placement='top'>
