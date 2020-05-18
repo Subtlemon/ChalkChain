@@ -24,8 +24,9 @@ export default class Entry extends Component {
   constructor(props) {
     super(props);
 
+    let roomName = new URLSearchParams(window.location.search).get('room');
     this.state = {
-      roomName: '',
+      roomName: roomName || '',
       nickName: '',
     };
   }
