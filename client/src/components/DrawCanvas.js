@@ -52,11 +52,36 @@ const styles = {
   },
 };
 
+class UndoStack {
+  constructor() {
+    this.stack = [];
+    this.endIdx = 0;
+  }
+
+  undo = () => {
+    this.endIdx = Math.max(0, this.endIdx - 1);
+    return this.stack.slice(0, this.endIdx);
+  }
+
+  redo = () => {
+    this.endIdx = Math.min(this.stack.length, this.endIdx + 1);
+    return this.stack.slice(0, this.endIdx);
+  }
+
+  push = (element) => {
+    const maxUndos = 20;
+    this.stack = this.stack.slice(Math.max(0, this.endIdx - 20), this.endIdx);
+    this.stack.push(element);
+    this.endIdx = this.stack.length;
+  }
+}
+
 // Assumes canvas cannot transform.
 export default class DrawCanvas extends Component {
   constructor(props) {
     super(props);
 
+    this.undoStack = new UndoStack();
     this.state = {
       colour: 'black',
       radius: 3,
@@ -72,9 +97,7 @@ export default class DrawCanvas extends Component {
     canvas.width = rect.width;
     canvas.height = rect.height;
 
-    this.ctx.fillStyle = 'white';
     this.clearscreen();
-    this.ctx.fillStyle = this.state.colour;
 
     // Workaround to enable preventDefault()
     // https://github.com/facebook/react/issues/9809
@@ -108,6 +131,8 @@ export default class DrawCanvas extends Component {
       this.ctx.closePath();
       const [x, y] = this.getCursorPosition(event);
       this.drawCircle(x, y);
+      // Hacky undo stack by saving entire image:
+      this.undoStack.push(this.refs.canvas.toDataURL());
     }
     this.setState({penDown: false});
   }
@@ -135,8 +160,15 @@ export default class DrawCanvas extends Component {
   handleTouchMove = (event) => {
     if (event.touches.length) {
       event.preventDefault();
-      console.log("preventing default?");
       this.handleMouseMove(event.touches[0]);
+    }
+  }
+
+  handleKeyDown = (event) => {
+    if (event.ctrlKey && event.key === 'z') {
+      this.drawImage(this.undoStack.undo().pop());
+    } else if (event.ctrlKey && event.shiftKey && event.key === 'Z') {
+      this.drawImage(this.undoStack.redo().pop());
     }
   }
 
@@ -160,7 +192,24 @@ export default class DrawCanvas extends Component {
   }
 
   clearscreen = () => {
+    this.ctx.fillStyle = 'white';
+    this.fillscreen();
+    this.ctx.fillStyle = this.state.colour;
+  }
+
+  fillscreen = () => {
     this.ctx.fillRect(0, 0, this.refs.canvas.width, this.refs.canvas.height);
+  }
+
+  drawImage = (base64EncodedImage) => {
+    if (!base64EncodedImage) {
+      this.clearscreen();
+    }
+    let image = new Image();
+    image.onload = () => {
+      this.ctx.drawImage(image, 0, 0);
+    }
+    image.src = base64EncodedImage;
   }
 
   /***************************************************************************
@@ -192,6 +241,8 @@ export default class DrawCanvas extends Component {
             onMouseMove={this.handleMouseMove}
             onTouchStart={this.handleTouchStart}
             onTouchEnd={this.handleTouchEnd}
+            onKeyDown={this.handleKeyDown}
+            tabIndex={0}
             // Moved onTouchMove to componentDidMount.
             style={styles.canvas}
           />
@@ -227,7 +278,7 @@ export default class DrawCanvas extends Component {
               </Paper>
             </Tooltip>
             <Tooltip title='Fill Screen' placement='bottom'>
-              <IconButton onClick={this.clearscreen}>
+              <IconButton onClick={this.fillscreen}>
                 <ClearIcon />
               </IconButton>
             </Tooltip>
