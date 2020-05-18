@@ -184,10 +184,7 @@ export default class RoomComponent extends Component {
             Room Name: <b>{this.state.roomName}</b>
           </Typography>
           <Typography variant='subtitle1'>
-            Join with the above room name or below link!
-          </Typography>
-          <Typography>
-            {window.location.origin + '/?' + this.state.roomName}
+            Ask your friends to join using the above room name!
           </Typography>
           <Divider variant='middle' style={styles.divider} />
           <div style={styles.settingsContainer}>
