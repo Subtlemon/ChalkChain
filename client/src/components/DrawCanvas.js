@@ -153,9 +153,10 @@ export default class DrawCanvas extends Component {
   }
 
   handleTouchEnd = (event) => {
-    if (event.touches.length) {
-      this.handleMouseUp(event.touches[0]);
-    }
+    // touchend events have no touch list.
+    this.handleMouseUp(event);
+    // When the touch event doesn't move, mouseup would be (double) fired next.
+    event.preventDefault();
   }
 
   handleTouchMove = (event) => {
