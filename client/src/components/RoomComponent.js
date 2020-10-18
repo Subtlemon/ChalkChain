@@ -190,9 +190,9 @@ export default class RoomComponent extends Component {
           <div style={styles.settingsContainer}>
             <div style={styles.settingsRow}>
               <TextField
-                label='Round Theme (unused)'
-                value={this.state.sharedState.theme || ''}
-                onChange={(event) => this.setState({sharedState: {theme: event.target.value}})}
+                label={'Max rounds (default ' + Object.keys(this.state.users).length + ')'}
+                value={this.state.sharedState.maxRounds || ''}
+                onChange={(event) => this.setState({sharedState: {maxRounds: event.target.value}})}
                 style={styles.textField}
               />
               <TextField

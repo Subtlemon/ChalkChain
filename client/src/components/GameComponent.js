@@ -67,12 +67,29 @@ export default class GameComponent extends Component {
       this.setState({
         mainView: 'SPECTATE_VIEW',
       });
+    } else if (this.state.settings.maxRounds &&
+        this.state.settings.maxRounds < this.calculateCurrentRoundNumber()) {
+      this.setState({
+        mainView: 'SPECTATE_VIEW',
+      });
     } else {
       this.setState({
         mainView: 'GAME_PHASE_VIEW',
         chainID: nextChain,
       });
     }
+  }
+
+  // Linearly calculate round number using userID and chainID.
+  // 
+  calculateCurrentRoundNumber = () => {
+    let roundNumber = 1;
+    let chainID = this.state.userID;
+    while (chainID !== undefined && chainID != this.state.chainID) {
+      ++roundNumber;
+      chainID = this.state.settings.order[chainID];
+    }
+    return roundNumber;
   }
 
   /***************************************************************************
