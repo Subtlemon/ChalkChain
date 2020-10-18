@@ -8,19 +8,19 @@ self.__precacheManifest = [
     "url": "/ChalkChain/static/js/runtime~main.96992e19.js"
   },
   {
-    "revision": "a140b2d92e5cc9cbe2a8",
-    "url": "/ChalkChain/static/js/main.80d9dd2d.chunk.js"
+    "revision": "f389118fdf3a4b437076",
+    "url": "/ChalkChain/static/js/main.b323feab.chunk.js"
   },
   {
-    "revision": "7c3c129b096b3a0b0a47",
-    "url": "/ChalkChain/static/js/2.93f9955d.chunk.js"
+    "revision": "8e7fad83f17d575b4f3a",
+    "url": "/ChalkChain/static/js/2.e847d7e4.chunk.js"
   },
   {
-    "revision": "a140b2d92e5cc9cbe2a8",
+    "revision": "f389118fdf3a4b437076",
     "url": "/ChalkChain/static/css/main.9886fc96.chunk.css"
   },
   {
-    "revision": "a3538bcb13f41b6bab753396de2a1b73",
+    "revision": "394bc2636be71862a96b46dd4d6451ab",
     "url": "/ChalkChain/index.html"
   }
 ];
