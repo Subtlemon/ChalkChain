@@ -9,11 +9,12 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
+import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 
 // Icons.
-import UserActive from '@material-ui/icons/AccountBox';
-import UserInactive from '@material-ui/icons/AccountBox';
+import UserActive from '@material-ui/icons/Check';
+import UserInactive from '@material-ui/icons/Close';
 
 const styles = {
   layout: {
@@ -75,6 +76,14 @@ export default class RoomComponent extends Component {
           sharedState: snapshot.val()
         });
       }
+    });
+
+    // Register a listener for the list of players still in game.
+    this.activePlayersRef = this.state.roomRef.child('game').child('activePlayers');
+    this.activePlayersRef.on('value', (snapshot) => {
+      this.setState({
+        activePlayers: snapshot.val()
+      });
     });
   }
 
@@ -151,13 +160,30 @@ export default class RoomComponent extends Component {
    * Render                                                                  *
    ***************************************************************************/
 
+  getUserIcon = (userInGame) => {
+    if (userInGame) {
+      return (
+        <Tooltip title='In Game'>
+          <UserInactive />
+        </Tooltip>
+      );
+    } else {
+      return (
+        <Tooltip title='Ready'>
+          <UserActive />
+        </Tooltip>
+      );
+    }
+  }
+
   getUserListItems = () => {
     if (this.state.users && Object.keys(this.state.users).length) {
       return Object.keys(this.state.users).map((key, index) => {
+        let userInGame = this.state.activePlayers && key in this.state.activePlayers;
         return (
           <ListItem key={key}>
             <ListItemIcon>
-              <UserActive />
+              {this.getUserIcon(userInGame)}
             </ListItemIcon>
             <ListItemText
               primary={this.state.users[key].nickName}
